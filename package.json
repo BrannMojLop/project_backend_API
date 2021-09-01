@@ -1,7 +1,7 @@
 {
-  "name": "project_final_fase02_backend",
+  "name": "proyect_backend_API",
   "version": "1.0.0",
-  "description": "",
+  "description": "API para sistema de rentas Web",
   "main": "index.js",
   "scripts": {
     "build": "babel src --out-dir dist",
@@ -9,7 +9,7 @@
     "start": "node dist/index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Equipo 5 - Bedu",
   "license": "ISC",
   "dependencies": {
     "@babel/polyfill": "^7.12.1",

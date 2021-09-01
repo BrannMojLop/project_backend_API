@@ -2,7 +2,8 @@ const MongoClient = require('mongodb').MongoClient;
 
 export async function connect() {
     try {
-        const client = await MongoClient.connect('mongodb://localhost:27017');
+        const url = "mongodb+srv://brann:WcLUQzsxKFkd9W@bedu-backend.kfbjk.mongodb.net";
+        const client = await MongoClient.connect(url);
         const db = client.db('income-system');
         return db;
     } catch (err) {
