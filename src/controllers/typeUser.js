@@ -62,8 +62,12 @@ async function updateTypeUser(req, res) {
 async function deleteTypeUser(req, res) {
     const db = await connect();
     try {
-        await db.collection('typeUser').findOneAndDelete({
+        await db.collection('typeUser').updateOne({
             _id: ObjectId(req.params.id)
+        }, {
+            $set: {
+                "status": false
+            }
         });
         res.send({
             "message": `Tipo de Usuario Eliminado con Exito`
@@ -78,7 +82,12 @@ async function deleteTypeUser(req, res) {
 async function deleteTypesUsers(req, res) {
     const db = await connect();
     try {
-        await db.collection('typeUser').remove({});
+        await db.collection('typeUser').updateMany({
+        }, {
+            $set: {
+                "status": false
+            }
+        });
         res.send({
             "message": `Tipos de Usuario Eliminados con Exito`
         });

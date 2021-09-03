@@ -62,8 +62,12 @@ async function updatePeriod(req, res) {
 async function deletePeriod(req, res) {
     const db = await connect();
     try {
-        await db.collection('periods').findOneAndDelete({
+        await db.collection('periods').updateOne({
             _id: ObjectId(req.params.id)
+        }, {
+            $set: {
+                "status": false
+            }
         });
         res.send({
             "message": `Periodo Eliminado con Exito`
@@ -78,7 +82,12 @@ async function deletePeriod(req, res) {
 async function deletePeriods(req, res) {
     const db = await connect();
     try {
-        await db.collection('periods').remove({});
+        await db.collection('periods').updateMany({
+        }, {
+            $set: {
+                "status": false
+            }
+        });;
         res.send({
             "message": `Periodos Eliminados con Exito`
         });

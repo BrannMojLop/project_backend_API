@@ -6,7 +6,16 @@ const router = Router();
 // Controllers
 import { createUser, showUsers, getUser, deleteUser, updateUser, deleteUsers } from "../controllers/users";
 
-// Routes
+/* Routes = {
+    (post '/') => createUser: "Crear un nuevo usuario"
+    (get '/') => showUsers: "Mostrar todos los usuarios existentes"
+    (post '/:id') => getUser: "Mostrar un usuario por ID"
+    (put '/:id') => updateUser: "Editar un usuario por ID"
+    (delete '/:id') => deleteUser: "Deshabilitar un usuario por ID"
+    (delete '/') => deleteUsers: "Deshabilitar todos los usuarios existentes"
+}
+ */
+
 router.get('/', showUsers);
 
 router.get('/:id', getUser);

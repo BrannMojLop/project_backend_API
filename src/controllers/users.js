@@ -1,6 +1,6 @@
 import { connect } from "../config/database";
 import { ObjectId } from "mongodb";
-const User = require('../models/users');
+const User = require('../models/user');
 
 
 async function showUsers(req, res) {
@@ -62,8 +62,12 @@ async function updateUser(req, res) {
 async function deleteUser(req, res) {
     const db = await connect();
     try {
-        await db.collection('users').findOneAndDelete({
+        await db.collection('users').updateOne({
             _id: ObjectId(req.params.id)
+        }, {
+            $set: {
+                "status": false
+            }
         });
         res.send({
             "message": `Usuario Eliminado con Exito`
@@ -78,7 +82,12 @@ async function deleteUser(req, res) {
 async function deleteUsers(req, res) {
     const db = await connect();
     try {
-        await db.collection('users').remove({});
+        await db.collection('users').updateMany({
+        }, {
+            $set: {
+                "status": false
+            }
+        });
         res.send({
             "message": `Usuarios Eliminados con Exito`
         });

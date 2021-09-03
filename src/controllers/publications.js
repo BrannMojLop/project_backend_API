@@ -16,8 +16,8 @@ async function showPublications(req, res) {
 }
 
 async function createPublication(req, res) {
-    const { id_product, prices, date_finished, status } = req.body;
-    const publication = new Publication(id_product, prices, date_finished, status);
+    const { id_product, amount, prices, location, max_distance, date_finished, status } = req.body;
+    const publication = new Publication(id_product, amount, prices, location, max_distance, date_finished, status);
     const db = await connect();
     await db.collection('publications').insertOne(publication);
     res.send({
@@ -66,8 +66,12 @@ async function updatePublication(req, res) {
 async function deletePublication(req, res) {
     const db = await connect();
     try {
-        await db.collection('publications').findOneAndDelete({
+        await db.collection('publications').updateOne({
             _id: ObjectId(req.params.id)
+        }, {
+            $set: {
+                "status": false
+            }
         });
         res.send({
             "message": `Publicaciòn Eliminada con Exito`
@@ -82,7 +86,12 @@ async function deletePublication(req, res) {
 async function deletePublications(req, res) {
     const db = await connect();
     try {
-        await db.collection('publications').remove({});
+        await db.collection('publications').updateMany({
+        }, {
+            $set: {
+                "status": false
+            }
+        });
         res.send({
             "message": `Publicaciones Eliminados con Exito`
         });

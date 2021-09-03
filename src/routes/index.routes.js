@@ -2,7 +2,11 @@ import { Router } from "express";
 
 const router = Router();
 
-// Routes
+/* Routes = {
+    (get '/') => "Muestra vista Home de la API"
+}
+ */
+
 router.get('/', (req, res) => {
     res.send('Welcome to my new API!');
 });

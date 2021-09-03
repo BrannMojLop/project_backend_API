@@ -6,7 +6,16 @@ const router = Router();
 // Controllers
 import { createSector, showSectors, getSector, deleteSector, deleteSectors, updateSector } from "../controllers/sectors";
 
-// Routes
+/* Routes = {
+    (post '/') => createSector: "Crear un nuevo sector de productos"
+    (get '/') => showSectors: "Mostrar todos los sectores"
+    (post '/:id') => getSector: "Mostrar un sector de productos por ID"
+    (put '/:id') => updateSector: "Editar un sector de productos por ID"
+    (delete '/:id') => deleteSector: "Deshabilitar un sector de producto por ID"
+    (delete '/') => deleteSectors: "Deshabilitar todos los sectores"
+}
+ */
+
 router.get('/', showSectors);
 
 router.get('/:id', getSector);

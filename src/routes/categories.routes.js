@@ -6,7 +6,16 @@ const router = Router();
 // Controllers
 import { createCategory, showCategories, getCategory, deleteCategory, updateCategory, deleteCategories } from "../controllers/categories";
 
-// Routes
+/* Routes = {
+    (post '/') => createCategory: "Crear una nueva categoria de productos"
+    (get '/') => showCategories: "Mostrar todas las categorias"
+    (post '/:id') => getCategory: "Mostrar una categoria de productos por ID"
+    (put '/:id') => updateCategory: "Editar una categoria de productos por ID"
+    (delete '/:id') => deleteCategory: "Deshabilitar una categoria de producto por ID"
+    (delete '/') => deleteCategories: "Deshabilitar todas las categorias"
+}
+ */
+
 router.get('/', showCategories);
 
 router.get('/:id', getCategory);
@@ -28,7 +37,7 @@ router.put('/:id', updateCategory);
 
 router.delete('/:id', deleteCategory);
 
-router.delete('/:id', deleteCategories);
+router.delete('/', deleteCategories);
 
 
 export default router;

@@ -1,6 +1,6 @@
 import { connect } from "../config/database";
 import { ObjectId } from "mongodb";
-const Product = require('../models/products');
+const Product = require('../models/product');
 
 
 async function showProducts(req, res) {
@@ -16,8 +16,8 @@ async function showProducts(req, res) {
 }
 
 async function createProduct(req, res) {
-    const { title, description, image, id_category, id_arrendador, status } = req.body;
-    const product = new Product(title, description, image, id_category, id_arrendador, status);
+    const { title, description, image, id_category, id_lessor, status } = req.body;
+    const product = new Product(title, description, image, id_category, id_lessor, status);
     const db = await connect();
     await db.collection('products').insertOne(product);
     res.send({
@@ -64,8 +64,12 @@ async function updateProduct(req, res) {
 async function deleteProduct(req, res) {
     const db = await connect();
     try {
-        const result = await db.collection('products').findOneAndDelete({
+        await db.collection('products').updateOne({
             _id: ObjectId(req.params.id)
+        }, {
+            $set: {
+                "status": false
+            }
         });
         res.send({
             "message": `Producto Eliminado con Exito`
@@ -80,7 +84,12 @@ async function deleteProduct(req, res) {
 async function deleteProducts(req, res) {
     const db = await connect();
     try {
-        await db.collection('products').remove({});
+        await db.collection('products').updateMany({
+        }, {
+            $set: {
+                "status": false
+            }
+        });
         res.send({
             "message": `Productos Eliminados con Exito`
         });

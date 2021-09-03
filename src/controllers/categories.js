@@ -1,6 +1,6 @@
 import { connect } from "../config/database";
 import { ObjectId } from "mongodb";
-const Category = require('../models/categories');
+const Category = require('../models/category');
 
 
 async function showCategories(req, res) {
@@ -61,10 +61,14 @@ async function updateCategory(req, res) {
 }
 
 async function deleteCategory(req, res) {
-    const db = await connect();
     try {
-        const result = await db.collection('categories').findOneAndDelete({
+        const db = await connect();
+        await db.collection('categories').updateOne({
             _id: ObjectId(req.params.id)
+        }, {
+            $set: {
+                "status": false
+            }
         });
         res.send({
             "message": `Categoria Eliminada con Exito`
@@ -77,15 +81,20 @@ async function deleteCategory(req, res) {
 }
 
 async function deleteCategories(req, res) {
-    const db = await connect();
     try {
-        await db.collection('categories').remove({});
+        const db = await connect();
+        await db.collection('categories').updateMany({
+        }, {
+            $set: {
+                "status": false
+            }
+        });
         res.send({
-            "message": `Categorias Eliminados con Exito`
+            "message": `Categorias Eliminadas con Exito`
         });
     } catch (err) {
         res.status(404).send({
-            "message": "Categorias no Eliminados",
+            "message": "Categorias no Eliminadas",
         })
     }
 }

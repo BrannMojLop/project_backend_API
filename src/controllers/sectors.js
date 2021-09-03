@@ -62,8 +62,12 @@ async function updateSector(req, res) {
 async function deleteSector(req, res) {
     const db = await connect();
     try {
-        await db.collection('sectors').findOneAndDelete({
+        await db.collection('sectors').updateOne({
             _id: ObjectId(req.params.id)
+        }, {
+            $set: {
+                "status": false
+            }
         });
         res.send({
             "message": `Sector Eliminado con Exito`
@@ -78,7 +82,12 @@ async function deleteSector(req, res) {
 async function deleteSectors(req, res) {
     const db = await connect();
     try {
-        await db.collection('sectors').remove({});
+        await db.collection('sectors').updateMany({
+        }, {
+            $set: {
+                "status": false
+            }
+        });
         res.send({
             "message": `Sectores Eliminados con Exito`
         });
