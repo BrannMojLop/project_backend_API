@@ -3,12 +3,11 @@
 Proyecto final para curso Bedu Santander Desarrollo Web Full-Stack - BackEnd
 
 # Integrantes del Equipo #5:
-
-   - Brandon Mojica Lopez
-   - Rogelio Yael
-   - Miriam
-   - Christian
-   - Antonio
+- Brandon Mojica Lopez
+- Rogelio Yael Vega Hernández
+- Miriam Alicia Márquez Rivera
+- Christian Eduardo Suárez Ontiveros
+- Antonio Aguirre Flores
 
 # Proyecto: API para Sistema de Rentas
 
