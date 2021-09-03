@@ -42,20 +42,18 @@ async function getSector(req, res) {
 async function updateSector(req, res) {
     const dataUpdate = {};
     Object.keys(req.body).forEach(atributo => {
-        dataUpdate[atributo] = req.body[atributo];
-        if (atributo === "create_at" || atributo === "update_at") {
-            res.status(400);
+        if (atributo !== "create_at" && atributo !== "update_at") {
+            dataUpdate[atributo] = req.body[atributo];
         }
     });
 
     const db = await connect();
-    db.collection("sectors").updateOne({
-        _id: ObjectId(req.params.id)
-    },
-        {
-            $set: dataUpdate
-        });
 
+    await db.collection("sectors").updateOne({
+        _id: ObjectId(req.params.id)
+    }, {
+        $set: dataUpdate
+    });
     res.send({
         message: 'Sector Actualizado con Exito'
     });
@@ -64,7 +62,7 @@ async function updateSector(req, res) {
 async function deleteSector(req, res) {
     const db = await connect();
     try {
-        const result = await db.collection('sectors').findOneAndDelete({
+        await db.collection('sectors').findOneAndDelete({
             _id: ObjectId(req.params.id)
         });
         res.send({

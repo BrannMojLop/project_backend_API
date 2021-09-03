@@ -42,14 +42,14 @@ async function getTypeUser(req, res) {
 async function updateTypeUser(req, res) {
     const dataUpdate = {};
     Object.keys(req.body).forEach(atributo => {
-        dataUpdate[atributo] = req.body[atributo];
-        if (atributo === "create_at" || atributo === "update_at") {
-            res.status(400);
+        if (atributo !== "create_at" && atributo !== "update_at") {
+            dataUpdate[atributo] = req.body[atributo];
         }
     });
+
     const db = await connect();
 
-    await db.collection("typeUser").updateOne({
+    await db.collection("typeUsers").updateOne({
         _id: ObjectId(req.params.id)
     }, {
         $set: dataUpdate

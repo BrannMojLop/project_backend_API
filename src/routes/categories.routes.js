@@ -13,7 +13,7 @@ router.get('/:id', getCategory);
 
 router.post('/', [
     check('title').isLength({ min: 3 }),
-    check('sector').isLength({ min: 3 }),
+    check('id_sector').isLength({ min: 3 }),
     check('status').isBoolean()
 ], async function (req, res) {
     const errors = validationResult(req)

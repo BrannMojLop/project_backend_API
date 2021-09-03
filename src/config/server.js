@@ -10,6 +10,7 @@ import ProductsRoutes from '../routes/products.routes';
 import UsersRoutes from '../routes/users.routes';
 import TypesUsersRoutes from '../routes/typesUsers.routes';
 import PeriodsRoutes from '../routes/periods.routes';
+import PublicationsRoutes from '../routes/publications.routes';
 
 // Settings
 server.set('port', process.env.PORT || 4001);
@@ -25,6 +26,8 @@ server.use('/products', ProductsRoutes);
 server.use('/users', UsersRoutes);
 server.use('/types-users', TypesUsersRoutes);
 server.use('/periods', PeriodsRoutes);
+server.use('/publications', PublicationsRoutes);
+
 
 
 export default server;

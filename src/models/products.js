@@ -1,10 +1,10 @@
 class Product {
-    constructor(title, description, image, category, sector, status) {
+    constructor(title, description, image, id_category, id_arrendador, status) {
         this.title = title;
         this.description = description;
         this.image = image;
-        this.category = category;
-        this.sector = sector;
+        this.id_category = id_category;
+        this.id_arrendador = id_arrendador;
         this.create_at = new Date();
         this.update_at = new Date();
         this.status = status;

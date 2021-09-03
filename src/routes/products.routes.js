@@ -13,8 +13,8 @@ router.get('/:id', getProduct);
 
 router.post('/', [
     check('title').isLength({ min: 3 }),
-    check('sector').isLength({ min: 3 }),
-    check('category').isLength({ min: 3 }),
+    check('id_category').isLength({ min: 3 }),
+    check('id_arrendador').isLength({ min: 3 }),
     check('image').isLength({ min: 3 }),
     check('status').isBoolean()
 ], async function (req, res) {

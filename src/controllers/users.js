@@ -16,8 +16,8 @@ async function showUsers(req, res) {
 }
 
 async function createUser(req, res) {
-    const { firstname, lastname, email, username, password, type } = req.body;
-    const usuario = new User(firstname, lastname, email, username, password, type);
+    const { firstname, lastname, email, username, password, id_type } = req.body;
+    const usuario = new User(firstname, lastname, email, username, password, id_type);
     const db = await connect();
     await db.collection('users').insertOne(usuario);
     res.send({
@@ -42,11 +42,11 @@ async function getUser(req, res) {
 async function updateUser(req, res) {
     const dataUpdate = {};
     Object.keys(req.body).forEach(atributo => {
-        dataUpdate[atributo] = req.body[atributo];
-        if (atributo === "create_at" || atributo === "update_at") {
-            res.status(400);
+        if (atributo !== "create_at" && atributo !== "update_at") {
+            dataUpdate[atributo] = req.body[atributo];
         }
     });
+
     const db = await connect();
 
     await db.collection("users").updateOne({

@@ -16,8 +16,8 @@ async function showProducts(req, res) {
 }
 
 async function createProduct(req, res) {
-    const { title, description, image, category, sector, status } = req.body;
-    const product = new Product(title, description, image, category, sector, status);
+    const { title, description, image, id_category, id_arrendador, status } = req.body;
+    const product = new Product(title, description, image, id_category, id_arrendador, status);
     const db = await connect();
     await db.collection('products').insertOne(product);
     res.send({
@@ -40,13 +40,14 @@ async function getProduct(req, res) {
 }
 
 async function updateProduct(req, res) {
+
     const dataUpdate = {};
     Object.keys(req.body).forEach(atributo => {
-        dataUpdate[atributo] = req.body[atributo];
-        if (atributo === "create_at" || atributo === "update_at") {
-            res.status(400);
+        if (atributo !== "create_at" && atributo !== "update_at") {
+            dataUpdate[atributo] = req.body[atributo];
         }
     });
+
     const db = await connect();
 
     await db.collection("products").updateOne({
@@ -57,6 +58,7 @@ async function updateProduct(req, res) {
     res.send({
         message: 'Producto Actualizado con Exito'
     });
+
 }
 
 async function deleteProduct(req, res) {

@@ -17,7 +17,7 @@ router.post('/', [
     check('email').isEmail(),
     check('username').isLength({ min: 3 }),
     check('password').isLength({ min: 3 }),
-    check('type').isNumeric()
+    check('id_type').isLength({ min: 3 })
 ], async function (req, res) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {

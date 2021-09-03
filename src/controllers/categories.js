@@ -16,8 +16,8 @@ async function showCategories(req, res) {
 }
 
 async function createCategory(req, res) {
-    const { title, description, sector, status } = req.body;
-    const category = new Category(title, description, sector, status);
+    const { title, description, id_sector, status } = req.body;
+    const category = new Category(title, description, id_sector, status);
     const db = await connect();
     await db.collection('categories').insertOne(category);
     res.send({
@@ -40,13 +40,14 @@ async function getCategory(req, res) {
 }
 
 async function updateCategory(req, res) {
+
     const dataUpdate = {};
     Object.keys(req.body).forEach(atributo => {
-        dataUpdate[atributo] = req.body[atributo];
-        if (atributo === "create_at" || atributo === "update_at") {
-            res.status(400);
+        if (atributo !== "create_at" && atributo !== "update_at") {
+            dataUpdate[atributo] = req.body[atributo];
         }
     });
+
     const db = await connect();
 
     await db.collection("categories").updateOne({

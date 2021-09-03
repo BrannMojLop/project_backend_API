@@ -1,8 +1,8 @@
 class Category {
-    constructor(title, description, sector, status) {
+    constructor(title, description, id_sector, status) {
         this.title = title;
         this.description = description;
-        this.sector = sector;
+        this.id_sector = id_sector;
         this.create_at = new Date();
         this.update_at = new Date();
         this.status = status;
