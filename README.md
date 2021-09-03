@@ -42,9 +42,9 @@ Proyecto final para curso Bedu Santander Desarrollo Web Full-Stack - BackEnd
 
 
    Para un mejor entendimiento de las entidades, usuarios y casos de uso pueden consultar el siguiente diagramas:
-     - [Diagrama_Entidades](https://drive.google.com/file/d/1uBLKCwS-GS7rOIiohY17Kgi7H9sFHRoK/view?usp=sharing) 
-     - [Diagrama_Historias_de_Usuario](https://docs.google.com/document/d/1nPgRO4lJxKA0pWs1SntZzZmJlEOH1swSI4LR8IQuQTk/edit?usp=sharing)
-     - [Diagrama_Casos_de_Uso](https://drive.google.com/file/d/1OFqRugTuhmfUXwVrMvSI0av4IHohZGlB/view?usp=sharing)
+   * [Diagrama_Entidades](https://drive.google.com/file/d/1uBLKCwS-GS7rOIiohY17Kgi7H9sFHRoK/view?usp=sharing)
+   * [Diagrama_Historias_de_Usuario](https://docs.google.com/document/d/1nPgRO4lJxKA0pWs1SntZzZmJlEOH1swSI4LR8IQuQTk/edit?usp=sharing)
+   * [Diagrama_Casos_de_Uso](https://drive.google.com/file/d/1OFqRugTuhmfUXwVrMvSI0av4IHohZGlB/view?usp=sharing)
 
 # Fundamentos Técnicos
 
@@ -54,18 +54,18 @@ Proyecto final para curso Bedu Santander Desarrollo Web Full-Stack - BackEnd
    - Express: Marco de trabajo base de la aplicación, adicionalmente se integran algunas librarías de express.
    - MongoDB: Base de datos (NoSQL) base de la aplicación.
 
-# Instalación (Tutorial)
+# Instalación
 
    ### Pasos:
    1. Clonar repositorio en la rama main
    2. Instalar Node.js versión 8+
    3. Dentro de la raíz del proyecto correr el siguiente comando para instalar las dependencias necesarias del proyecto:
-        `<npm install>`
+   ##### Comando: `npm install`
    4. Dentro de la raíz del proyecto correr el siguiente comando para generar la carpeta dist convirtiendo el código de ES6 en ES5:
-        `<npm run build>`
-   5. Editar el archivo src/config/database.js, cambiado en URL de conexión el : con el usuario de la Base de Datos
-        `<mongodb+srv://<user>:<password>@bedu-backend.kfbjk.mongodb.net>`
+   ##### Comando: `npm run build`
+   5. Editar el archivo src/config/database.js, cambiado en URL de conexión el `<user>:<password>` con el usuario de la Base de Datos
+   ##### Comando: `mongodb+srv://<user>:<password>@bedu-backend.kfbjk.mongodb.net`
    6. Solicita al Administrador de base de datos agregar la dirección IP de tu dispositivo a la IP Access List de MongoDBAtlas
    7. Dentro de la raíz del proyecto correr el siguiente comando para arrancar el servidor:
-        `<npm start>`
+   ##### Comando: `npm start`
    8. Ya puedes iniciar a crear peticiones, como lo indica la siguiente documentación: [Documentación API](#)
