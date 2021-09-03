@@ -64,7 +64,7 @@ Proyecto final para curso Bedu Santander Desarrollo Web Full-Stack - BackEnd
    4. Dentro de la raíz del proyecto correr el siguiente comando para generar la carpeta dist convirtiendo el código de ES6 en ES5:
    ##### Comando: `npm run build`
    5. Editar el archivo src/config/database.js, cambiado en URL de conexión el `<user>:<password>` con el usuario de la Base de Datos
-   ##### Comando: `mongodb+srv://<user>:<password>@bedu-backend.kfbjk.mongodb.net`
+   ##### URL a Editar: `mongodb+srv://<user>:<password>@bedu-backend.kfbjk.mongodb.net`
    6. Solicita al Administrador de base de datos agregar la dirección IP de tu dispositivo a la IP Access List de MongoDBAtlas
    7. Dentro de la raíz del proyecto correr el siguiente comando para arrancar el servidor:
    ##### Comando: `npm start`
