@@ -12,10 +12,10 @@ Proyecto final para curso Bedu Santander Desarrollo Web Full-Stack - BackEnd
 
 # Proyecto: API para Sistema de Rentas
 
-    Objetivo: Ofrecer un servicio para la implementación de un sistema de rentas, la cual sea suficientemente robusta y escalable a la necesidad de las interfaces de usuario que el sistema requiera. El propósito de la API
+    **Objetivo:** Ofrecer un servicio para la implementación de un sistema de rentas, la cual sea suficientemente robusta y escalable a la necesidad de las interfaces de usuario que el sistema requiera. El propósito de la API
     es brindar un control y una herramienta de una forma ordenada y estandarizada, para personas que requieran poner en renta sus servicios o productos y estos a su ves esten al alcance de otras personas que busquen un producto o servicio para interes personal, laboral, etc.
 
-    Alcance: En primer instancia la API
+    **Alcance:** En primer instancia la API
     esta enfocada a un servicio básico que de la oportunidad a los arrendadores de mostrar y publicar sus servicios o productos en renta mediante la Web, de la misma forma dar la oportunidad a los arrendadores de llegar a estas publicaciones
     y solicitar informes para posteriormente concretar la renta del servicio y/o producto mediante un acuerdo
     estandarizado en tiempos y costos. Sin embargo la forma en que sé esta modula rizando la API
@@ -28,7 +28,7 @@ Proyecto final para curso Bedu Santander Desarrollo Web Full-Stack - BackEnd
 
 # Estructura del Proyecto
 
-    Entidades:
+    **Entidades:**
         - Tipos de Usuario: Entidad que modela un tipo de usuario con el cual se controlan la acciones que cada usuario puede realizar.
         - Usuarios: Entidad que modela a una persona la cual interactúe con la plataforma según el tipo de usuario que se le otorgó.
         - Sectores: Entidad que modela un sector especifico de productos y/o servicios.
@@ -39,20 +39,20 @@ Proyecto final para curso Bedu Santander Desarrollo Web Full-Stack - BackEnd
         - Solicitudes de Renta: Entidad que modela una solicitud de renta de un arrendatario a aun arrendador.
         - Rentas: Entidad que modela un renta nueva de un producto y/o servicio entre un arrendador y un arrendatario
 
-    Usuarios:
+    **Usuarios:**
         - Administrador: Persona física que funge como encargado y/o administrador de la plataforma.
         - Arrendador: Persona física que requiere de servicios y/o productos en renta.
         - Arrendatario: Persona física que busca ofrecer servicios y/o productos en renta.
 
 
     Para un mejor entendimiento de las entidades, usuarios y casos de uso pueden consultar el siguiente diagramas:
-        * Diagrama_Entidades: https://drive.google.com/file/d/1uBLKCwS-GS7rOIiohY17Kgi7H9sFHRoK/view?usp=sharing
-        * Diagrama_Historias_de_Usuario: https://docs.google.com/document/d/1nPgRO4lJxKA0pWs1SntZzZmJlEOH1swSI4LR8IQuQTk/edit?usp=sharing
-        * Diagrama_Casos_de_Uso: https://drive.google.com/file/d/1OFqRugTuhmfUXwVrMvSI0av4IHohZGlB/view?usp=sharing
+        * [Diagrama_Entidades](https://drive.google.com/file/d/1uBLKCwS-GS7rOIiohY17Kgi7H9sFHRoK/view?usp=sharing) 
+        * [Diagrama_Historias_de_Usuario](https://docs.google.com/document/d/1nPgRO4lJxKA0pWs1SntZzZmJlEOH1swSI4LR8IQuQTk/edit?usp=sharing)
+        * [Diagrama_Casos_de_Uso](https://drive.google.com/file/d/1OFqRugTuhmfUXwVrMvSI0av4IHohZGlB/view?usp=sharing)
 
 # Fundamentos Técnicos
 
-    Tecnologías Aplicadas:
+    **Tecnologías Aplicadas:**
         - JavaScript: Lenguaje de programación base de la aplicación.
         - Babel: Transcopilador para el uso adecuado del código en cualquier navegador, incluyendo nuevas sintaxis del lenguaje.
         - Express: Marco de trabajo base de la aplicación, adicionalmente se integran algunas librarías de express.
@@ -60,7 +60,7 @@ Proyecto final para curso Bedu Santander Desarrollo Web Full-Stack - BackEnd
 
 # Instalación (Tutorial)
 
-    Pasos:
+    **Pasos:**
     1. Clonar repositorio en la rama main
     2. Instalar Node.js versión 8+
     3. Dentro de la raíz del proyecto correr el siguiente comando para instalar las dependencias necesarias del proyecto:
@@ -72,4 +72,4 @@ Proyecto final para curso Bedu Santander Desarrollo Web Full-Stack - BackEnd
     6. Solicita al Administrador de base de datos agregar la dirección IP de tu dispositivo a la IP Access List de MongoDBAtlas
     7. Dentro de la raíz del proyecto correr el siguiente comando para arrancar el servidor:
     # npm start
-    8. Ya puedes iniciar a crear peticiones, como lo indica la siguiente documentación: <URL Pendiente>
+    8. Ya puedes iniciar a crear peticiones, como lo indica la siguiente documentación: [Documentación API](#)
