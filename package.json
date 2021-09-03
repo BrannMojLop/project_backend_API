@@ -1,0 +1,27 @@
+{
+  "name": "proyect_backend_API",
+  "version": "1.0.0",
+  "description": "API para sistema de rentas Web",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel src --out-dir dist",
+    "dev": "nodemon src/index.js --exec babel-node",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "Equipo 5 - Bedu",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "express": "^4.17.1",
+    "express-validator": "^6.12.1",
+    "mongodb": "^4.1.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.14.8",
+    "@babel/core": "^7.15.0",
+    "@babel/node": "^7.14.9",
+    "@babel/preset-env": "^7.15.0",
+    "nodemon": "^2.0.12"
+  }
+}
