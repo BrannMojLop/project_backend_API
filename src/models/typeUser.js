@@ -1,10 +1,19 @@
-class TypeUser {
-    constructor(name, type) {
-        this.name = name;
-        this.type = type;
-        this.create_at = new Date();
-        this.update_at = new Date();
-    }
-}
+const mongoose = require('mongoose');
 
-module.exports = TypeUser;
+const typeUserSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    type: {
+        type: Number,
+        required: true
+    },
+    status: {
+        type: Boolean,
+        required: true
+    }
+}, { timestamps: true })
+
+module.exports = mongoose.model("TypeUser", typeUserSchema);

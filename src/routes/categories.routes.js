@@ -1,10 +1,9 @@
 import { Router } from "express";
-const { check, validationResult } = require('express-validator');
 
 const router = Router();
 
 // Controllers
-import { createCategory, showCategories, getCategory, deleteCategory, updateCategory, deleteCategories } from "../controllers/categories";
+import { createCategory, showCategories, getCategory, disableCategory, updateCategory, disableCategories } from "../controllers/categories";
 
 /* Routes = {
     (post '/') => createCategory: "Crear una nueva categoria de productos"
@@ -20,24 +19,15 @@ router.get('/', showCategories);
 
 router.get('/:id', getCategory);
 
-router.post('/', [
-    check('title').isLength({ min: 3 }),
-    check('id_sector').isLength({ min: 3 }),
-    check('status').isBoolean()
-], async function (req, res) {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() })
-    } else {
-        createCategory(req, res);
-    }
+router.post('/', function (req, res) {
+    createCategory(req, res);
 })
 
 router.put('/:id', updateCategory);
 
-router.delete('/:id', deleteCategory);
+router.delete('/:id', disableCategory);
 
-router.delete('/', deleteCategories);
+router.delete('/', disableCategories);
 
 
 export default router;

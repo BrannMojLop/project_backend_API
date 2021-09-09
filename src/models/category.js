@@ -1,12 +1,21 @@
-class Category {
-    constructor(title, description, id_sector, status) {
-        this.title = title;
-        this.description = description;
-        this.id_sector = id_sector;
-        this.create_at = new Date();
-        this.update_at = new Date();
-        this.status = status;
-    }
-}
+const mongoose = require('mongoose');
 
-module.exports = Category;
+const categorySchema = new mongoose.Schema({
+    title: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    description: String,
+    id_sector: {
+        type: mongoose.Types.ObjectId,
+        ref: "Sector",
+        required: true
+    },
+    status: {
+        type: Boolean,
+        required: true
+    }
+}, { timestamps: true })
+
+module.exports = mongoose.model("Category", categorySchema);

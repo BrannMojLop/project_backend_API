@@ -1,11 +1,16 @@
-class Sector {
-    constructor(title, description, status) {
-        this.title = title;
-        this.description = description;
-        this.create_at = new Date();
-        this.update_at = new Date();
-        this.status = status;
-    }
-}
+const { Schema, model } = require('mongoose');
 
-module.exports = Sector;
+const sectorSchema = new Schema({
+    title: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    description: String,
+    status: {
+        type: Boolean,
+        required: true
+    }
+}, { timestamps: true })
+
+module.exports = model("Sector", sectorSchema);

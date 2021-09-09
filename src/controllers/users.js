@@ -1,110 +1,123 @@
-import { connect } from "../config/database";
-import { ObjectId } from "mongodb";
-const User = require('../models/user');
+const connect = require('../config/database');
+const User = require('../models/User');
 
 
 async function showUsers(req, res) {
-    const db = await connect();
-    const result = await db.collection('users').find({}).toArray();
-    if (result.length == 0) {
-        res.status(404).send({
-            "message": "No se encontraron registros",
-        });
+    await connect();
+    if (req.query.firstname) {
+        await User.find({ firstname: req.query.firstname }, function (err, users) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (users.length > 0) {
+                res.status(200).send(users);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
+    } else if (req.query.lastname) {
+        await User.find({ lastname: req.query.lastname }, function (err, users) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (users.length > 0) {
+                res.status(200).send(users);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
     } else {
-        res.json(result);
+        const users = await User.find();
+        if (users.length === 0) {
+            res.send("No se han encontrado registros");
+        } else {
+            res.status(200).send(users);
+        }
     }
 }
 
+
 async function createUser(req, res) {
-    const { firstname, lastname, email, username, password, id_type } = req.body;
-    const usuario = new User(firstname, lastname, email, username, password, id_type);
-    const db = await connect();
-    await db.collection('users').insertOne(usuario);
-    res.send({
-        message: "Usuario Creado con Exito",
+    const user = new User(req.body)
+
+    await connect();
+    await user.save(function (err) {
+        if (err) {
+            res.status(400).json({
+                success: false,
+                type: err.name,
+                error: err.message
+            });
+        } else {
+            res.status(201).json({
+                success: "Usuario creado con Exito",
+                User: user
+            });
+        }
     });
 }
 
+
 async function getUser(req, res) {
-    try {
-        const db = await connect();
-        const result = await db.collection('users').find({
-            _id: ObjectId(req.params.id)
-        }).toArray();
-        res.json(result);
-    } catch (err) {
-        res.status(404).send({
-            "message": "Usuario no encontrado",
-        })
+    await connect();
+    const user = await User.findById(req.params.id);
+    if (!user) {
+        res.status(401).send("No se han encontrado registros");
+    } else {
+        res.status(200).send(user);
     }
 }
 
 async function updateUser(req, res) {
-    const dataUpdate = {};
-    Object.keys(req.body).forEach(atributo => {
-        if (atributo !== "create_at" && atributo !== "update_at") {
-            dataUpdate[atributo] = req.body[atributo];
+    await connect();
+
+    const user = await User.findById(req.params.id);
+    if (!user) {
+        res.status(401).send("No se han encontrado el registro");
+    } else {
+        await User.findByIdAndUpdate(req.params.id, {
+            $set: req.body
+        });
+        res.status(200).send({
+            message: 'Usuario Actualizado con Exito'
+        });
+    }
+}
+
+async function disableUser(req, res) {
+    await connect();
+
+    const user = await User.findById(req.params.id);
+    if (!user) {
+        res.status(401).send("No se han encontrado el registro");
+    } else {
+        await User.findByIdAndUpdate(req.params.id, {
+            "status": false
+        });
+        res.status(200).send({
+            message: 'Usuario Deshabilitado con Exito'
+        });
+    }
+}
+
+async function disableUsers(req, res) {
+    await connect();
+
+    await User.updateMany({ "status": false }, function (err, users) {
+        if (err) {
+            res.status(401).send("No se han encontrado el registros");
+        } else {
+            res.status(200).send({
+                message: 'Usuarios Deshabilitados con Exito'
+            });
         }
     });
-
-    const db = await connect();
-
-    await db.collection("users").updateOne({
-        _id: ObjectId(req.params.id)
-    }, {
-        $set: dataUpdate
-    });
-    res.send({
-        message: 'Usuario Actualizado con Exito'
-    });
 }
-
-async function deleteUser(req, res) {
-    const db = await connect();
-    try {
-        await db.collection('users').updateOne({
-            _id: ObjectId(req.params.id)
-        }, {
-            $set: {
-                "status": false
-            }
-        });
-        res.send({
-            "message": `Usuario Eliminado con Exito`
-        });
-    } catch (err) {
-        res.status(404).send({
-            "message": "Usuario no encontrado",
-        })
-    }
-}
-
-async function deleteUsers(req, res) {
-    const db = await connect();
-    try {
-        await db.collection('users').updateMany({
-        }, {
-            $set: {
-                "status": false
-            }
-        });
-        res.send({
-            "message": `Usuarios Eliminados con Exito`
-        });
-    } catch (err) {
-        res.status(404).send({
-            "message": "Usuarios no Eliminados",
-        })
-    }
-}
-
 
 // exportamos las funciones definidas
 module.exports = {
     createUser,
     showUsers,
     getUser,
-    deleteUser,
+    disableUser,
     updateUser,
-    deleteUsers
+    disableUsers
 }

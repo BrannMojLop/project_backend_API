@@ -1,14 +1,37 @@
-class User {
-    constructor(firstname, lastname, email, username, password, id_type) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.email = email;
-        this.username = username;
-        this.password = password;
-        this.id_type = id_type;
-        this.create_at = new Date();
-        this.update_at = new Date();
-    }
-}
+const mongoose = require('mongoose');
 
-module.exports = User;
+const userSchema = new mongoose.Schema({
+    firstname: {
+        type: String,
+        required: true
+    },
+    lastname: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    username: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    id_type: {
+        type: mongoose.Types.ObjectId,
+        ref: "TypeUser",
+        required: true
+    },
+    status: {
+        type: Boolean,
+        required: true
+    }
+}, { timestamps: true })
+
+module.exports = mongoose.model("User", userSchema);

@@ -1,10 +1,19 @@
-class Period {
-    constructor(name, days) {
-        this.name = name;
-        this.days = days;
-        this.create_at = new Date();
-        this.update_at = new Date();
-    }
-}
+const mongoose = require('mongoose');
 
-module.exports = Period;
+const periodSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    days: {
+        type: Number,
+        required: true
+    },
+    status: {
+        type: Boolean,
+        required: true
+    }
+}, { timestamps: true })
+
+module.exports = mongoose.model("Period", periodSchema);
