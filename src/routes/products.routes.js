@@ -1,5 +1,4 @@
 import { Router } from "express";
-const { check, validationResult } = require('express-validator');
 
 const router = Router();
 

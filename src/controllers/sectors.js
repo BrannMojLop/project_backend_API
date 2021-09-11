@@ -1,5 +1,5 @@
 const connect = require('../config/database');
-const Sector = require('../models/sector');
+const Sector = require('../models/Sector');
 
 
 async function showSectors(req, res) {
