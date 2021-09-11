@@ -5,7 +5,7 @@ const Sector = require('../models/Sector');
 async function showSectors(req, res) {
     await connect();
     if (req.query.title) {
-        await Sector.find({ title: req.query.title }, function (err, sectors) {
+        await Sector.find({ title: { $regex: req.query.title, $options: "$i" } }, function (err, sectors) {
             if (err) {
                 res.status(401).send(err);
             } else if (sectors.length > 0) {

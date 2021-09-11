@@ -1,5 +1,6 @@
 const connect = require('../config/database');
 const Rent = require('../models/Rent');
+const RentalRequest = require('../models/RentalRequest');
 
 
 async function showRents(req, res) {
@@ -17,7 +18,7 @@ async function createRent(req, res) {
     const rent = new Rent(req.body)
 
     await connect();
-    await rent.save(function (err) {
+    await rent.save(async function (err) {
         if (err) {
             res.status(400).json({
                 success: false,
@@ -25,10 +26,22 @@ async function createRent(req, res) {
                 error: err.message
             });
         } else {
-            res.status(201).json({
-                success: "Renta creada con Exito",
-                Rent: rent
-            });
+            const rentalRequest = await RentalRequest.findById(rent.id_rentalRequest);
+            if (!rentalRequest) {
+                res.status(401).send("No se ha encontrado el registro de la solicitud de renta");
+            } else {
+                await RentalRequest.findByIdAndUpdate(rent.id_rentalRequest, {
+                    answer: {
+                        "status": "Confirmada",
+                        "ref": 2
+                    }
+                });
+                res.status(200).json({
+                    message: 'Solicitud de Renta Actualizada con Exito',
+                    success: "Renta creada con Exito",
+                    RentalRequest: rentalRequest
+                });
+            }
         }
     });
 }
@@ -51,43 +64,29 @@ async function updateRent(req, res) {
     if (!rent) {
         res.status(401).send("No se han encontrado el registro");
     } else {
-        await Rent.findByIdAndUpdate(req.params.id, {
-            $set: req.body
-        });
-        res.status(200).send({
-            message: 'Renta Actualizada con Exito'
-        });
-    }
-}
-
-async function disableRent(req, res) {
-    await connect();
-
-    const rent = await Rent.findById(req.params.id);
-    if (!rent) {
-        res.status(401).send("No se han encontrado el registro");
-    } else {
-        await Rent.findByIdAndUpdate(req.params.id, {
-            "status": false
-        });
-        res.status(200).send({
-            message: 'Renta Deshabilitada con Exito'
-        });
-    }
-}
-
-async function disableRents(req, res) {
-    await connect();
-
-    await Rent.updateMany({ "status": false }, function (err, rents) {
-        if (err) {
-            res.status(401).send("No se han encontrado el registros");
-        } else {
-            res.status(200).send({
-                message: 'Rentas Deshabilitadas con Exito'
+        if (req.params.update == 2) {
+            await Rent.findByIdAndUpdate(req.params.id, {
+                status: {
+                    "status": "Finalizada",
+                    "ref": 2
+                }
+            });
+        } else if (req.params.update == 3) {
+            await Rent.findByIdAndUpdate(req.params.id, {
+                status: {
+                    "status": "Cancelada",
+                    "ref": 2
+                }
+            });
+        } else if (req.params.update == 4) {
+            await Rent.findByIdAndUpdate(req.params.id, {
+                payment: true
             });
         }
-    });
+        res.status(200).json({
+            message: 'Solicitud de Renta Actualizada con Exito'
+        });
+    }
 }
 
 // exportamos las funciones definidas
@@ -95,7 +94,5 @@ module.exports = {
     createRent,
     showRents,
     getRent,
-    disableRent,
-    updateRent,
-    disableRents
+    updateRent
 }

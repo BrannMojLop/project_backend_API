@@ -10,8 +10,8 @@ import { createPeriod, showPeriods, getPeriod, disablePeriod, updatePeriod, disa
     (get '/') => showPeriods: "Mostrar todas los periodos de renta"
     (post '/:id') => getPeriod: "Mostrar un periodo de renta de productos por ID"
     (put '/:id') => updatePeriod: "Editar un periodo de renta de productos por ID"
-    (delete '/:id') => deletePeriod: "Deshabilitar un periodo de renta de productos por ID"
-    (delete '/') => deletePeriods: "Deshabilitar todos los periodos de renta"
+    (delete '/:id') => disablePeriod: "Deshabilitar un periodo de renta de productos por ID"
+    (delete '/') => disablePeriods: "Deshabilitar todos los periodos de renta"
 }
  */
 

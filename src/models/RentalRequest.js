@@ -4,10 +4,14 @@ const rentalRequestSchema = new mongoose.Schema({
     id_lessee: {
         type: mongoose.Types.ObjectId,
         ref: "User",
-        required: true,
-        unique: true
+        required: true
     },
-    id_publicacion: {
+    id_lessor: {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
+    id_publication: {
         type: mongoose.Types.ObjectId,
         ref: "Publication",
         required: true,
@@ -18,13 +22,12 @@ const rentalRequestSchema = new mongoose.Schema({
         required: true
     },
     answer: {
-        type: Boolean,
+        type: Object,
         required: true,
-        default: false
-    },
-    status: {
-        type: Boolean,
-        required: true
+        default: {
+            "status": "En Espera",
+            "ref": 1
+        }
     }
 }, { timestamps: true })
 

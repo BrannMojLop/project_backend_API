@@ -5,7 +5,7 @@ const User = require('../models/User');
 async function showUsers(req, res) {
     await connect();
     if (req.query.firstname) {
-        await User.find({ firstname: req.query.firstname }, function (err, users) {
+        await User.find({ firstname: { $regex: req.query.firstname, $options: "$i" } }, function (err, users) {
             if (err) {
                 res.status(401).send(err);
             } else if (users.length > 0) {
@@ -15,7 +15,27 @@ async function showUsers(req, res) {
             }
         })
     } else if (req.query.lastname) {
-        await User.find({ lastname: req.query.lastname }, function (err, users) {
+        await User.find({ lastname: { $regex: req.query.lastname, $options: "$i" } }, function (err, users) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (users.length > 0) {
+                res.status(200).send(users);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
+    } else if (req.query.username) {
+        await User.find({ username: { $regex: req.query.username, $options: "$i" } }, function (err, users) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (users.length > 0) {
+                res.status(200).send(users);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
+    } else if (req.query.email) {
+        await User.find({ email: { $regex: req.query.email, $options: "$i" } }, function (err, users) {
             if (err) {
                 res.status(401).send(err);
             } else if (users.length > 0) {

@@ -10,8 +10,8 @@ import { createCategory, showCategories, getCategory, disableCategory, updateCat
     (get '/') => showCategories: "Mostrar todas las categorias"
     (post '/:id') => getCategory: "Mostrar una categoria de productos por ID"
     (put '/:id') => updateCategory: "Editar una categoria de productos por ID"
-    (delete '/:id') => deleteCategory: "Deshabilitar una categoria de producto por ID"
-    (delete '/') => deleteCategories: "Deshabilitar todas las categorias"
+    (delete '/:id') => disableCategory: "Deshabilitar una categoria de producto por ID"
+    (delete '/') => disableCategories: "Deshabilitar todas las categorias"
 }
  */
 

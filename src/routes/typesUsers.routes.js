@@ -10,8 +10,8 @@ import { createTypeUser, showTypesUsers, getTypeUser, disableTypeUser, updateTyp
     (get '/') => showTypeUsers: "Mostrar todos los tipos de usuario existentes"
     (post '/:id') => getTypeUser: "Mostrar un tipo de usuario por ID"
     (put '/:id') => updateTypeUser: "Editar un tipo de usuario por ID"
-    (delete '/:id') => deleteTypeUser: "Deshabilitar un tipo de usuario por ID"
-    (delete '/') => deleteTypesUsers: "Deshabilitar todos los tipos de usuario existentes"
+    (delete '/:id') => disableTypeUser: "Deshabilitar un tipo de usuario por ID"
+    (delete '/') => disableTypesUsers: "Deshabilitar todos los tipos de usuario existentes"
 }
  */
 

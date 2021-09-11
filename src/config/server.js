@@ -12,10 +12,10 @@ import TypesUsersRoutes from '../routes/typesUsers.routes';
 import PeriodsRoutes from '../routes/periods.routes';
 import PublicationsRoutes from '../routes/publications.routes';
 import Rental_RequestsRoutes from '../routes/rentails_requests.routes';
-import Rents from '../routes/rents_requests.routes';
+import Rents from '../routes/rents.routes';
 
 // Settings
-server.set('port', process.env.PORT || 4001);
+server.set('port', process.env.PORT || 4000);
 
 // Middleware
 server.use(express.json());

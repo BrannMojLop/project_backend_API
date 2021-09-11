@@ -10,8 +10,8 @@ import { createProduct, showProducts, getProduct, disableProduct, updateProduct,
     (get '/') => showProducts: "Mostrar todos los productos existentes"
     (post '/:id') => getProduct: "Mostrar un producto por ID"
     (put '/:id') => updateProduct: "Editar un producto por ID"
-    (delete '/:id') => deleteProduct: "Deshabilitar un producto por ID"
-    (delete '/') => deleteProducts: "Deshabilitar todos los productos existentes"
+    (delete '/:id') => disableProduct: "Deshabilitar un producto por ID"
+    (delete '/') => disableProducts: "Deshabilitar todos los productos existentes"
 }
  */
 

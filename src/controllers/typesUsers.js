@@ -5,7 +5,7 @@ const TypeUser = require('../models/TypeUser');
 async function showTypesUsers(req, res) {
     await connect();
     if (req.query.name) {
-        await TypeUser.find({ name: req.query.name }, function (err, typesUsers) {
+        await TypeUser.find({ name: { $regex: req.query.name, $options: "$i" } }, function (err, typesUsers) {
             if (err) {
                 res.status(401).send(err);
             } else if (typesUsers.length > 0) {

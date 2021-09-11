@@ -14,6 +14,16 @@ async function showCategories(req, res) {
                 res.status(404).send("No se han encontrado registros");
             }
         })
+    } else if (req.query.id_sector) {
+        await Category.find({ id_sector: req.query.id_sector }, function (err, requests) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (requests.length > 0) {
+                res.status(200).send(requests);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
     } else {
         const categories = await Category.find();
         if (categories.length === 0) {

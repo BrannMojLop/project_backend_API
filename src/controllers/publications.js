@@ -5,7 +5,17 @@ const Publication = require('../models/Publication');
 async function showPublications(req, res) {
     await connect();
     if (req.query.title) {
-        await Publication.find({ title: req.query.title }, function (err, publications) {
+        await Publication.find({ $regex: req.query.title, $options: "$i" }, function (err, publications) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (publications.length > 0) {
+                res.status(200).send(publications);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
+    } else if (req.query.location) {
+        await Publication.find({ $regex: req.query.location, $options: "$i" }, function (err, publications) {
             if (err) {
                 res.status(401).send(err);
             } else if (publications.length > 0) {

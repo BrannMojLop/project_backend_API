@@ -11,8 +11,8 @@ import { createSector, showSectors, getSector, updateSector, disableSector, disa
     (get '/?title') => showSectors: "Mostra sector por titulo"
     (post '/:id') => getSector: "Mostrar un sector de productos por ID"
     (put '/:id') => updateSector: "Editar un sector de productos por ID"
-    (delete '/:id') => deleteSector: "Deshabilitar un sector de producto por ID"
-    (delete '/') => deleteSectors: "Deshabilitar todos los sectores"
+    (delete '/:id') => disableSector: "Deshabilitar un sector de producto por ID"
+    (delete '/') => disableSectors: "Deshabilitar todos los sectores"
 }
  */
 

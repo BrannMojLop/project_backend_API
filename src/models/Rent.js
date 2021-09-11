@@ -14,16 +14,19 @@ const rentSchema = new mongoose.Schema({
     },
     start_date: {
         type: Date,
-        required: true,
-        default: new Date()
+        required: true
     },
     end_date: {
         type: Date,
         required: true
     },
     status: {
-        type: Boolean,
-        required: true
+        type: Object,
+        required: true,
+        default: {
+            "status": "Activa",
+            "ref": 1
+        }
     }
 }, { timestamps: true })
 

@@ -5,7 +5,7 @@ const Period = require('../models/Period');
 async function showPeriods(req, res) {
     await connect();
     if (req.query.name) {
-        await Period.find({ name: req.query.name }, function (err, periods) {
+        await Period.find({ $regex: req.query.name, $options: "$i" }, function (err, periods) {
             if (err) {
                 res.status(401).send(err);
             } else if (periods.length > 0) {

@@ -3,15 +3,13 @@ import { Router } from "express";
 const router = Router();
 
 // Controllers
-import { createRentalRequest, showRentalRequests, getRentalRequest, disableRentalRequest, updateRentalRequest, disableRentalRequests } from "../controllers/rentail_requests";
+import { createRentalRequest, showRentalRequests, getRentalRequest, updateRentalRequest } from "../controllers/rentail_requests";
 
 /* Routes = {
     (post '/') => createRentalRequest: "Crear una nueva solicitud de renta"
     (get '/') => showRentalRequests: "Mostrar todas las solicitudes de renta"
     (post '/:id') => getRentalRequest: "Mostrar una solicitud de renta por ID"
-    (put '/:id') => updateRentalRequest: "Editar una solicitud de renta por ID"
-    (delete '/:id') => disableRentalRequest: "Deshabilitar una solicitud de renta por ID"
-    (delete '/') => disableRentalRequests: "Deshabilitar todas las solicitudes de renta"
+    (put '/:id') => updateRentalRequest: "Actualizar una solicitud de renta por ID"
 }
  */
 
@@ -23,11 +21,7 @@ router.post('/', function (req, res) {
     createRentalRequest(req, res);
 })
 
-router.put('/:id', updateRentalRequest);
-
-router.delete('/:id', disableRentalRequest);
-
-router.delete('/', disableRentalRequests);
+router.put('/:id/:answer', updateRentalRequest);
 
 
 export default router;

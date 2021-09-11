@@ -5,11 +5,31 @@ const Product = require('../models/Product');
 async function showProducts(req, res) {
     await connect();
     if (req.query.title) {
-        await Product.find({ title: req.query.title }, function (err, products) {
+        await Product.find({ $regex: req.query.title, $options: "$i" }, function (err, products) {
             if (err) {
                 res.status(401).send(err);
             } else if (products.length > 0) {
                 res.status(200).send(products);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
+    } else if (req.query.id_lessor) {
+        await Product.find({ id_lessor: req.query.id_lessor }, function (err, requests) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (requests.length > 0) {
+                res.status(200).send(requests);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
+    } else if (req.query.id_category) {
+        await Product.find({ id_category: req.query.id_category }, function (err, requests) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (requests.length > 0) {
+                res.status(200).send(requests);
             } else {
                 res.status(404).send("No se han encontrado registros");
             }

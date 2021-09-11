@@ -10,8 +10,8 @@ import { createUser, showUsers, getUser, disableUser, updateUser, disableUsers }
     (get '/') => showUsers: "Mostrar todos los usuarios existentes"
     (post '/:id') => getUser: "Mostrar un usuario por ID"
     (put '/:id') => updateUser: "Editar un usuario por ID"
-    (delete '/:id') => deleteUser: "Deshabilitar un usuario por ID"
-    (delete '/') => deleteUsers: "Deshabilitar todos los usuarios existentes"
+    (delete '/:id') => disableUser: "Deshabilitar un usuario por ID"
+    (delete '/') => disableUsers: "Deshabilitar todos los usuarios existentes"
 }
  */
 

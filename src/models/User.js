@@ -31,8 +31,21 @@ const userSchema = new mongoose.Schema({
     },
     status: {
         type: Boolean,
-        required: true
+        required: true,
+        default: true
     }
 }, { timestamps: true })
+
+userSchema.methods.publicData = () => {
+    return {
+        id: this.id,
+        username: this.username,
+        email: this.email,
+        firstname: this.firstname,
+        lastname: this.lastname,
+        createdAt: this.createdAt,
+        updatedAt: this.updatedAt
+    };
+};
 
 module.exports = mongoose.model("User", userSchema);
