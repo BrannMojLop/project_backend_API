@@ -39,7 +39,7 @@ async function createTypeUser(req, res) {
         } else {
             res.status(201).json({
                 success: "Tipo de Usuario creado con Exito",
-                TypeUser: TypeUser
+                typeUser: typeUser
             });
         }
     });

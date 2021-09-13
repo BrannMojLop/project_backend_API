@@ -20,9 +20,7 @@ router.get('/', showSectors);
 
 router.get('/:id', getSector);
 
-router.post('/', function (req, res) {
-    createSector(req, res);
-})
+router.post('/', createSector);
 
 router.put('/:id', updateSector);
 

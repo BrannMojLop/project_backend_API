@@ -19,9 +19,7 @@ router.get('/', showCategories);
 
 router.get('/:id', getCategory);
 
-router.post('/', function (req, res) {
-    createCategory(req, res);
-})
+router.post('/', createCategory);
 
 router.put('/:id', updateCategory);
 

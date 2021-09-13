@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const uniqueValidator = require("mongoose-unique-validator");
 
 const categorySchema = new mongoose.Schema({
     title: {
@@ -14,8 +15,10 @@ const categorySchema = new mongoose.Schema({
     },
     status: {
         type: Boolean,
-        required: true
+        required: true,
+        default: true
     }
 }, { timestamps: true })
 
+categorySchema.plugin(uniqueValidator, { message: "La categoria ya existe" });
 module.exports = mongoose.model("Category", categorySchema);

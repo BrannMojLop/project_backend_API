@@ -19,9 +19,7 @@ router.get('/', showTypesUsers);
 
 router.get('/:id', getTypeUser);
 
-router.post('/', function (req, res) {
-    createTypeUser(req, res);
-})
+router.post('/', createTypeUser);
 
 router.put('/:id', updateTypeUser);
 

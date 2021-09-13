@@ -1,16 +1,20 @@
-const { Schema, model } = require('mongoose');
+const mongoose = require('mongoose');
+const uniqueValidator = require("mongoose-unique-validator");
 
-const sectorSchema = new Schema({
+const sectorSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true,
+        required: [true, "no puede estar vacio"],
+        index: true,
         unique: true
     },
     description: String,
     status: {
         type: Boolean,
-        required: true
+        required: true,
+        default: true
     }
 }, { timestamps: true })
 
-module.exports = model("Sector", sectorSchema);
+sectorSchema.plugin(uniqueValidator, { message: "Ya existe un sector con este nombre" });
+module.exports = mongoose.model("Sector", sectorSchema);

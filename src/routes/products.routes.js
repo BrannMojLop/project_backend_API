@@ -19,9 +19,7 @@ router.get('/', showProducts);
 
 router.get('/:id', getProduct);
 
-router.post('/', function (req, res) {
-    createProduct(req, res);
-})
+router.post('/', createProduct);
 
 router.put('/:id', updateProduct);
 

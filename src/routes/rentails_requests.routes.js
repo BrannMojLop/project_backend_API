@@ -17,9 +17,7 @@ router.get('/', showRentalRequests);
 
 router.get('/:id', getRentalRequest);
 
-router.post('/', function (req, res) {
-    createRentalRequest(req, res);
-})
+router.post('/', createRentalRequest);
 
 router.put('/:id/:answer', updateRentalRequest);
 

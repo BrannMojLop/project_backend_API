@@ -49,19 +49,24 @@ async function createRentalRequest(req, res) {
     const rentalRequest = new RentalRequest(req.body)
 
     await connect();
-    await rentalRequest.save(async function (err) {
-        if (err) {
-            res.status(400).json({
-                success: false,
-                type: err.title,
-                error: err.message
-            });
-        } else {
-            const publication = await Publication.findById(rentalRequest.id_publication);
-            if (!publication) {
-                res.status(401).send("No se ha encontrado el registro de la publicacion");
+
+    const publication = await Publication.findById(rentalRequest.id_publication);
+    if (!publication) {
+        res.status(401).send("No se ha encontrado el registro de la publicacion");
+    } else if (publication.amount == 0) {
+        res.status(401).send("El producto no tiene existencias disponibles para renta");
+    } else if (publication.status == false) {
+        res.status(401).send("La publicacion ya no esta activa");
+    } else {
+        await rentalRequest.save(async function (err) {
+            if (err) {
+                res.status(400).json({
+                    success: false,
+                    type: err.title,
+                    error: err.message
+                });
             } else {
-                if (publication.amount <= 1) {
+                if (publication.amount == 1) {
                     await Publication.findByIdAndUpdate(rentalRequest.id_publication, {
                         amount: publication.amount - 1,
                         status: false
@@ -77,10 +82,9 @@ async function createRentalRequest(req, res) {
                     RentalRequest: rentalRequest
                 });
             }
-        }
-    })
+        })
+    }
 }
-
 
 async function getRentalRequest(req, res) {
     await connect();

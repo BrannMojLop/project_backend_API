@@ -19,9 +19,7 @@ router.get('/', showPeriods);
 
 router.get('/:id', getPeriod);
 
-router.post('/', function (req, res) {
-    createPeriod(req, res);
-})
+router.post('/', createPeriod);
 
 router.put('/:id', updatePeriod);
 

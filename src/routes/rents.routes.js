@@ -17,9 +17,7 @@ router.get('/', showRents);
 
 router.get('/:id', getRent);
 
-router.post('/', function (req, res) {
-    createRent(req, res);
-})
+router.post('/', createRent);
 
 router.put('/:id/:update', updateRent);
 

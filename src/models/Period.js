@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const uniqueValidator = require("mongoose-unique-validator");
 
 const periodSchema = new mongoose.Schema({
     name: {
@@ -12,8 +13,10 @@ const periodSchema = new mongoose.Schema({
     },
     status: {
         type: Boolean,
-        required: true
+        required: true,
+        default: true
     }
 }, { timestamps: true })
 
+periodSchema.plugin(uniqueValidator, { message: "El periodo ya existe" });
 module.exports = mongoose.model("Period", periodSchema);

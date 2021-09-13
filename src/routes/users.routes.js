@@ -1,9 +1,10 @@
 import { Router } from "express";
+const auth = require('./auth.routes');
 
 const router = Router();
 
 // Controllers
-import { createUser, showUsers, getUser, disableUser, updateUser, disableUsers } from "../controllers/users";
+import { createUser, showUsers, getUser, disableUser, updateUser, disableUsers, loginUser } from "../controllers/users";
 
 /* Routes = {
     (post '/') => createUser: "Crear un nuevo usuario"
@@ -15,13 +16,13 @@ import { createUser, showUsers, getUser, disableUser, updateUser, disableUsers }
 }
  */
 
-router.get('/', showUsers);
+router.get('/', auth.requerido, showUsers);
 
 router.get('/:id', getUser);
 
-router.post('/', function (req, res) {
-    createUser(req, res);
-})
+router.post('/', createUser);
+
+router.post('/login', loginUser);
 
 router.put('/:id', updateUser);
 

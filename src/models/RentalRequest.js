@@ -14,8 +14,7 @@ const rentalRequestSchema = new mongoose.Schema({
     id_publication: {
         type: mongoose.Types.ObjectId,
         ref: "Publication",
-        required: true,
-        unique: true
+        required: true
     },
     contract: {
         type: Object,

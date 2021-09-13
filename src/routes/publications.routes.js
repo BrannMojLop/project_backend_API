@@ -18,9 +18,7 @@ router.get('/', showPublications);
 
 router.get('/:id', getPublication);
 
-router.post('/', function (req, res) {
-    createPublication(req, res);
-})
+router.post('/', createPublication);
 
 router.put('/:id', updatePublication);
 

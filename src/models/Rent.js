@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const uniqueValidator = require("mongoose-unique-validator");
 
 const rentSchema = new mongoose.Schema({
     id_rentalRequest: {
@@ -30,4 +31,5 @@ const rentSchema = new mongoose.Schema({
     }
 }, { timestamps: true })
 
+rentSchema.plugin(uniqueValidator, { message: "La solicitud de renta ya fue aceptada" });
 module.exports = mongoose.model("Rent", rentSchema);

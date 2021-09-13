@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const uniqueValidator = require("mongoose-unique-validator");
 
 const publicationSchema = new mongoose.Schema({
     title: {
@@ -36,8 +37,10 @@ const publicationSchema = new mongoose.Schema({
     },
     status: {
         type: Boolean,
-        required: true
+        required: true,
+        default: true
     }
 }, { timestamps: true })
 
+publicationSchema.plugin(uniqueValidator, { message: "El producto ya se encuentra publicado" });
 module.exports = mongoose.model("Publication", publicationSchema);

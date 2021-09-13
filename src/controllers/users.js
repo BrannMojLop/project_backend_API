@@ -1,5 +1,6 @@
 const connect = require('../config/database');
 const User = require('../models/User');
+const passport = require('passport');
 
 
 async function showUsers(req, res) {
@@ -56,7 +57,12 @@ async function showUsers(req, res) {
 
 
 async function createUser(req, res) {
-    const user = new User(req.body)
+    const body = req.body,
+        password = body.password
+
+    delete body.password
+    const user = new User(body)
+    user.createPassword(password)
 
     await connect();
     await user.save(function (err) {
@@ -67,12 +73,31 @@ async function createUser(req, res) {
                 error: err.message
             });
         } else {
-            res.status(201).json({
-                success: "Usuario creado con Exito",
-                User: user
-            });
+            res.status(201).json(user.toAuthJSON());
         }
-    });
+    })
+}
+
+
+function loginUser(req, res, next) {
+    if (!req.body.email) {
+        return res.status(422).json({ errors: { email: "no puede estar vacío" } });
+    }
+
+    if (!req.body.password) {
+        return res.status(422).json({ errors: { password: "no puede estar vacío" } });
+    }
+
+    passport.authenticate('local', { session: false }, function (err, user, info) {
+        if (err) { return next(err); }
+
+        if (user) {
+            user.token = user.generarJWT();
+            return res.json({ user: user.toAuthJSON() });
+        } else {
+            return res.status(422).json(info);
+        }
+    })(req, res, next);
 }
 
 
@@ -139,5 +164,6 @@ module.exports = {
     getUser,
     disableUser,
     updateUser,
-    disableUsers
+    disableUsers,
+    loginUser
 }
