@@ -5,14 +5,82 @@ const RentalRequest = require('../models/RentalRequest');
 
 async function showRents(req, res) {
     await connect();
-    const rents = await Rent.find();
-    if (rents.length === 0) {
-        res.send("No se han encontrado registros");
+    if (req.query.id_lessee) {
+        await Rent.aggregate([
+            {
+                '$lookup': {
+                    'from': 'rentalrequests',
+                    'localField': 'id_rentalRequest',
+                    'foreignField': '_id',
+                    'as': 'request'
+                }
+            }, { '$unwind': '$request' }
+        ], function (err, rents) {
+            if (err) {
+                res.status(401).res.send(err);
+            }
+            else if (rents.length === 0) {
+                res.send("No se han encontrado registros");
+            } else {
+                const result = [];
+                rents.forEach(rent => {
+                    if (rent.request.id_lessee == req.query.id_lessee) {
+                        result.push(rent)
+                    }
+                });
+                res.status(200).send(result);
+            }
+        }
+        )
+    } else if (req.query.id_lessor) {
+        await Rent.aggregate([
+            {
+                '$lookup': {
+                    'from': 'rentalrequests',
+                    'localField': 'id_rentalRequest',
+                    'foreignField': '_id',
+                    'as': 'request'
+                }
+            }, { '$unwind': '$request' }
+        ], function (err, rents) {
+            if (err) {
+                res.status(401).res.send(err);
+            }
+            else if (rents.length === 0) {
+                res.send("No se han encontrado registros");
+            } else {
+                const result = [];
+                rents.forEach(rent => {
+                    if (rent.request.id_lessor == req.query.id_lessor) {
+                        result.push(rent)
+                    }
+                });
+                res.status(200).send(result);
+            }
+        }
+        )
     } else {
-        res.status(200).send(rents);
+        await Rent.aggregate([
+            {
+                '$lookup': {
+                    'from': 'rentalrequests',
+                    'localField': 'id_rentalRequest',
+                    'foreignField': '_id',
+                    'as': 'request'
+                }
+            }, { '$unwind': '$request' }], function (err, rents) {
+                if (err) {
+                    res.status(401).res.send(err);
+                }
+                else if (rents.length === 0) {
+                    res.send("No se han encontrado registros");
+                } else {
+                    res.status(200).send(rents);
+                }
+            }
+        )
     }
 }
-
 
 async function createRent(req, res) {
     const rent = new Rent(req.body)
@@ -45,7 +113,6 @@ async function createRent(req, res) {
         }
     });
 }
-
 
 async function getRent(req, res) {
     await connect();

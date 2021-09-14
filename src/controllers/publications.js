@@ -52,39 +52,43 @@ async function showPublications(req, res) {
                 res.status(404).send("No se han encontrado registros");
             }
         })
-    }
-    // } else if (req.query.min_price || req.query.max_price) {
-    //     const min = Number(req.query.min_price);
-    //     const max = Number(req.query.max_price);
-    //     await Publication.aggregate([
-    //         {
-    //             '$match': {
-    //                 'prices': {
-    //                     '$gte': 250
-    //                 }
-    //             }
-    //         }, {
-    //             '$lookup': {
-    //                 'from': 'products',
-    //                 'localField': 'id_product',
-    //                 'foreignField': '_id',
-    //                 'as': 'product'
-    //             }
-    //         }
-    //     ], function (err, publications) {
-    //         if (err) {
-    //             res.status(401).send(err);
-    //         } else {
-    //             if (err) {
-    //                 res.status(401).send(err);
-    //             } else if (publications.length > 0) {
-    //                 res.status(200).send(publications);
-    //             } else {
-    //                 res.status(404).send("No se han encontrado registros");
-    //             }
-    //         }
-    //     })
-    else {
+    } else if (req.query.min_price || req.query.max_price) {
+        if (!req.query.min_price) {
+            req.query.min_price = 0
+        }
+        if (!req.query.max_price) {
+            req.query.max_price = Infinity
+        }
+        await Publication.aggregate([
+            {
+                '$match': {
+                    'prices': {
+                        '$gte': Number(req.query.min_price),
+                        '$lte': Number(req.query.max_price)
+                    }
+                }
+            }, {
+                '$lookup': {
+                    'from': 'products',
+                    'localField': 'id_product',
+                    'foreignField': '_id',
+                    'as': 'product'
+                }
+            }
+        ], function (err, publications) {
+            if (err) {
+                res.status(401).send(err);
+            } else {
+                if (err) {
+                    res.status(401).send(err);
+                } else if (publications.length > 0) {
+                    res.status(200).send(publications);
+                } else {
+                    res.status(404).send("No se han encontrado registros");
+                }
+            }
+        })
+    } else {
         await Publication.aggregate([
             {
                 '$lookup': {
