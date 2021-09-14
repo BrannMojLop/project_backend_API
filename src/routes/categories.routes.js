@@ -8,6 +8,7 @@ import { createCategory, showCategories, getCategory, disableCategory, updateCat
 /* Routes = {
     (post '/') => createCategory: "Crear una nueva categoria de productos"
     (get '/') => showCategories: "Mostrar todas las categorias"
+    (get '/?title?sector') => showCategories: "Mostrar todas las categorias filtradas"
     (post '/:id') => getCategory: "Mostrar una categoria de productos por ID"
     (put '/:id') => updateCategory: "Editar una categoria de productos por ID"
     (delete '/:id') => disableCategory: "Deshabilitar una categoria de producto por ID"

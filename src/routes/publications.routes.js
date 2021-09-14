@@ -7,6 +7,7 @@ import { createPublication, showPublications, getPublication, disablePublication
 /* Routes = {
     (post '/') => createPublication: "Crear una nueva publicacion de renta"
     (get '/') => showPublications: "Mostrar todas las publicaciones de renta"
+    (get '/?title?location?min_price&max_price') => showPublications: "Mostrar todas las publicaciones de renta filtradas"
     (post '/:id') => getPublication: "Mostrar una publicacion de renta por ID"
     (put '/:id') => updatePublication: "Editar una publicacion de renta por ID"
     (delete '/:id') => disablePublication: "Deshabilitar una publicacion de renta por ID"

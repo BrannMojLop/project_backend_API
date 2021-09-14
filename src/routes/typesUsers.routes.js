@@ -8,6 +8,7 @@ import { createTypeUser, showTypesUsers, getTypeUser, disableTypeUser, updateTyp
 /* Routes = {
     (post '/') => createTypeUser: "Crear un nuevo tipo de usuario"
     (get '/') => showTypeUsers: "Mostrar todos los tipos de usuario existentes"
+    (get '/?name') => showTypeUsers: "Mostrar todos los tipos de usuario filtrados"
     (post '/:id') => getTypeUser: "Mostrar un tipo de usuario por ID"
     (put '/:id') => updateTypeUser: "Editar un tipo de usuario por ID"
     (delete '/:id') => disableTypeUser: "Deshabilitar un tipo de usuario por ID"

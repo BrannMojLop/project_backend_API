@@ -8,6 +8,7 @@ import { createPeriod, showPeriods, getPeriod, disablePeriod, updatePeriod, disa
 /* Routes = {
     (post '/') => createPeriod: "Crear un nuevo periodo de renta de productos"
     (get '/') => showPeriods: "Mostrar todas los periodos de renta"
+    (get '/?title') => showCategories: "Mostrar todos los periodos filtrados"
     (post '/:id') => getPeriod: "Mostrar un periodo de renta de productos por ID"
     (put '/:id') => updatePeriod: "Editar un periodo de renta de productos por ID"
     (delete '/:id') => disablePeriod: "Deshabilitar un periodo de renta de productos por ID"

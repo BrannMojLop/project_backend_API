@@ -9,6 +9,7 @@ import { createUser, showUsers, getUser, disableUser, updateUser, disableUsers, 
 /* Routes = {
     (post '/') => createUser: "Crear un nuevo usuario"
     (get '/') => showUsers: "Mostrar todos los usuarios existentes"
+    (get '/?firstname?lastname?email?username') => showUsers: "Mostrar todos los usuarios filtrados"
     (post '/:id') => getUser: "Mostrar un usuario por ID"
     (put '/:id') => updateUser: "Editar un usuario por ID"
     (delete '/:id') => disableUser: "Deshabilitar un usuario por ID"
