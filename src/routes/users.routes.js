@@ -4,7 +4,7 @@ const auth = require('./auth.routes');
 const router = Router();
 
 // Controllers
-import { createUser, showUsers, getUser, disableUser, updateUser, disableUsers, loginUser } from "../controllers/users";
+import { createUser, showUsers, getUser, disableUser, updateUser, disableUsers, login } from "../controllers/users";
 
 /* Routes = {
     (post '/') => createUser: "Crear un nuevo usuario"
@@ -22,7 +22,7 @@ router.get('/:id', getUser);
 
 router.post('/', createUser);
 
-router.post('/login', loginUser);
+router.post('/login', login);
 
 router.put('/:id', updateUser);
 

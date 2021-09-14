@@ -1,11 +1,13 @@
 const connect = require('../config/database');
 const Product = require('../models/Product');
+const Category = require('../models/Category');
+const User = require('../models/User');
 
 
 async function showProducts(req, res) {
     await connect();
     if (req.query.title) {
-        await Product.find({ $regex: req.query.title, $options: "$i" }, function (err, products) {
+        await Product.find({ title: { $regex: req.query.title, $options: "$i" } }, function (err, products) {
             if (err) {
                 res.status(401).send(err);
             } else if (products.length > 0) {
@@ -14,26 +16,38 @@ async function showProducts(req, res) {
                 res.status(404).send("No se han encontrado registros");
             }
         })
-    } else if (req.query.id_lessor) {
-        await Product.find({ id_lessor: req.query.id_lessor }, function (err, requests) {
+    } else if (req.query.lessor_username) {
+        await User.findOne({ username: { $regex: req.query.lessor_username, $options: "$i" } }, async function (err, lessor) {
             if (err) {
                 res.status(401).send(err);
-            } else if (requests.length > 0) {
-                res.status(200).send(requests);
             } else {
-                res.status(404).send("No se han encontrado registros");
+                await Product.find({ id_lessor: lessor._id }, function (err, products) {
+                    if (err) {
+                        res.status(401).send(err);
+                    } else if (products.length > 0) {
+                        res.status(200).send(products);
+                    } else {
+                        res.status(404).send("No se han encontrado registros");
+                    }
+                });
             }
-        })
-    } else if (req.query.id_category) {
-        await Product.find({ id_category: req.query.id_category }, function (err, requests) {
-            if (err) {
-                res.status(401).send(err);
-            } else if (requests.length > 0) {
-                res.status(200).send(requests);
+        });
+    } else if (req.query.category) {
+        await Category.findOne({ title: { $regex: req.query.category, $options: "$i" } }, async function (category) {
+            if (category == null) {
+                res.status(401).send("No se han encontrado registros");
             } else {
-                res.status(404).send("No se han encontrado registros");
+                await Product.find({ id_category: category._id }, function (err, products) {
+                    if (err) {
+                        res.status(401).send(err);
+                    } else if (products.length > 0) {
+                        res.status(200).send(products);
+                    } else {
+                        res.status(404).send("No se han encontrado registros");
+                    }
+                });
             }
-        })
+        });
     } else {
         const products = await Product.find();
         if (products.length === 0) {
@@ -43,7 +57,6 @@ async function showProducts(req, res) {
         }
     }
 }
-
 
 async function createProduct(req, res) {
     const product = new Product(req.body)
@@ -64,7 +77,6 @@ async function createProduct(req, res) {
         }
     });
 }
-
 
 async function getProduct(req, res) {
     await connect();

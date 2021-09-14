@@ -1,11 +1,25 @@
 const connect = require('../config/database');
 const Publication = require('../models/Publication');
 
-
 async function showPublications(req, res) {
     await connect();
     if (req.query.title) {
-        await Publication.find({ $regex: req.query.title, $options: "$i" }, function (err, publications) {
+
+        const search = new RegExp(`${req.query.title}`, 'i');
+        await Publication.aggregate([
+            {
+                '$lookup': {
+                    'from': 'products',
+                    'localField': 'id_product',
+                    'foreignField': '_id',
+                    'as': 'product'
+                }
+            }, {
+                '$match': {
+                    'title': search
+                }
+            }
+        ], function (err, publications) {
             if (err) {
                 res.status(401).send(err);
             } else if (publications.length > 0) {
@@ -15,7 +29,21 @@ async function showPublications(req, res) {
             }
         })
     } else if (req.query.location) {
-        await Publication.find({ $regex: req.query.location, $options: "$i" }, function (err, publications) {
+        const search = new RegExp(`${req.query.location}`, 'i');
+        await Publication.aggregate([
+            {
+                '$lookup': {
+                    'from': 'products',
+                    'localField': 'id_product',
+                    'foreignField': '_id',
+                    'as': 'product'
+                }
+            }, {
+                '$match': {
+                    'location': search
+                }
+            }
+        ], function (err, publications) {
             if (err) {
                 res.status(401).send(err);
             } else if (publications.length > 0) {
@@ -24,13 +52,55 @@ async function showPublications(req, res) {
                 res.status(404).send("No se han encontrado registros");
             }
         })
-    } else {
-        const publications = await Publication.find();
-        if (publications.length === 0) {
-            res.send("No se han encontrado registros");
-        } else {
-            res.status(200).send(publications);
-        }
+    }
+    // } else if (req.query.min_price || req.query.max_price) {
+    //     const min = Number(req.query.min_price);
+    //     const max = Number(req.query.max_price);
+    //     await Publication.aggregate([
+    //         {
+    //             '$match': {
+    //                 'prices': {
+    //                     '$gte': 250
+    //                 }
+    //             }
+    //         }, {
+    //             '$lookup': {
+    //                 'from': 'products',
+    //                 'localField': 'id_product',
+    //                 'foreignField': '_id',
+    //                 'as': 'product'
+    //             }
+    //         }
+    //     ], function (err, publications) {
+    //         if (err) {
+    //             res.status(401).send(err);
+    //         } else {
+    //             if (err) {
+    //                 res.status(401).send(err);
+    //             } else if (publications.length > 0) {
+    //                 res.status(200).send(publications);
+    //             } else {
+    //                 res.status(404).send("No se han encontrado registros");
+    //             }
+    //         }
+    //     })
+    else {
+        await Publication.aggregate([
+            {
+                '$lookup': {
+                    'from': 'products',
+                    'localField': 'id_product',
+                    'foreignField': '_id',
+                    'as': 'product'
+                }
+            }], function (err, publications) {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.status(200).send(publications);
+                }
+            }
+        );
     }
 }
 
