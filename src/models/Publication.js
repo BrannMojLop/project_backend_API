@@ -4,33 +4,35 @@ const uniqueValidator = require("mongoose-unique-validator");
 const publicationSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        required: [true, 'Se debe indicar un titulo para la publicacion']
     },
     id_product: {
         type: mongoose.Types.ObjectId,
         ref: "Product",
-        required: true,
+        required: [true, 'Se debe indicar un ID_Producto para la publicacion'],
         unique: true
     },
     prices: {
         type: Array,
-        required: true
+        required: [true, 'Es necesario indicar los precios de la publicacion']
     },
     periods: {
         type: Array,
-        required: true
+        required: [true, 'Es necesario indicar los periodos de la publicacion']
     },
     amount: {
         type: Number,
-        required: true
+        required: [true, 'Se deben indicar las existencias disponibles'],
+        min: [1, 'Solo se pueden existencias igual o mayores a 1']
     },
     location: {
         type: String,
-        required: true
+        required: [true, 'Es necesario indicar la localidad del producto en renta']
     },
     max_distance: {
         type: Number,
-        required: true
+        required: [true, 'Es necesario indicar la distancia maxima para renta del producto'],
+        min: [1, 'Solo se pueden distancias igual o mayores a 1km']
     },
     finished_at: {
         type: Date

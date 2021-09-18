@@ -5,13 +5,14 @@ const categorySchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        match: [/^[a-zA-Z]+$/, "es inválido, solo se aceptan letras"]
     },
     description: String,
     id_sector: {
         type: mongoose.Types.ObjectId,
         ref: "Sector",
-        required: true
+        required: [true, 'Se debe indicar un Sector para la Categoria']
     },
     status: {
         type: Boolean,

@@ -8,7 +8,7 @@ import { createProduct, showProducts, getProduct, disableProduct, updateProduct,
 /* Routes = {
     (post '/') => createProduct: "Crear un nuevo producto"
     (get '/') => showProducts: "Mostrar todos los productos existentes"
-    (get '/?title?id_lessor?id_category') => showCategories: "Mostrar todos los productos filtrados"
+    (get '/?title?id_lessor?id_category') => showproducts: "Mostrar todos los productos filtrados"
     (post '/:id') => getProduct: "Mostrar un producto por ID"
     (put '/:id') => updateProduct: "Editar un producto por ID"
     (delete '/:id') => disableProduct: "Deshabilitar un producto por ID"

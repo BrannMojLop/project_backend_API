@@ -5,7 +5,7 @@ const rentSchema = new mongoose.Schema({
     id_rentalRequest: {
         type: mongoose.Types.ObjectId,
         ref: "RentalRequest",
-        required: true,
+        required: [true, 'Se debe indicar un ID_SolicitudDeRenta para la renta'],
         unique: true
     },
     payment: {
@@ -15,11 +15,11 @@ const rentSchema = new mongoose.Schema({
     },
     start_date: {
         type: Date,
-        required: true
+        required: [true, 'Debe indicarse la fecha en la que el contrato de renta incia']
     },
     end_date: {
         type: Date,
-        required: true
+        required: [true, 'Debe indicarse la fecha en la que el contrato de renta termina']
     },
     status: {
         type: Object,

@@ -4,9 +4,10 @@ const uniqueValidator = require("mongoose-unique-validator");
 const sectorSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: [true, "no puede estar vacio"],
+        required: [true, "Se debe indicar un titulo para el sector"],
         index: true,
-        unique: true
+        unique: true,
+        match: [/^[a-zA-Z]+$/, "es inválido, solo se aceptan letras"]
     },
     description: String,
     status: {

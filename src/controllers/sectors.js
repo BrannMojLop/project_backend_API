@@ -48,11 +48,15 @@ async function createSector(req, res) {
 
 async function getSector(req, res) {
     await connect();
-    const sector = await Sector.findById(req.params.id);
-    if (!sector) {
-        res.status(401).send("No se han encontrado registros");
-    } else {
-        res.status(200).send(sector);
+    try {
+        const sector = await Sector.findById(req.params.id);
+        if (!sector) {
+            res.status(200).send("No se han encontrado registros");
+        } else {
+            res.status(200).send(sector);
+        }
+    } catch (err) {
+        res.status(401).send(err)
     }
 }
 

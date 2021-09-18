@@ -8,27 +8,29 @@ const secret = require('../config').secret;
 const userSchema = new mongoose.Schema({
     firstname: {
         type: String,
-        required: true
+        match: [/^[a-zA-Z]+$/, "es inválido, solo puede contener letras"]
     },
     lastname: {
         type: String,
-        required: true
+        match: [/^[a-zA-Z]+$/, "es inválido, solo puede contener letras"]
     },
     email: {
         type: String,
-        required: true,
-        unique: true
+        required: [true, 'Se requiere un email valido'],
+        unique: true,
+        match: [/\S+@\S+\.\S+/, "es inválido"],
     },
     username: {
         type: String,
         index: true,
-        required: true,
-        unique: true
+        required: [true, 'Se requiere un username valido'],
+        unique: true,
+        match: [/^[a-zA-Z0-9]+$/, "es inválido"]
     },
     id_type: {
         type: mongoose.Types.ObjectId,
         ref: "TypeUser",
-        required: true
+        required: [true, 'Se debe indicar un tipo de usurio']
     },
     status: {
         type: Boolean,

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const productSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        required: [true, 'Se debe indicar un titulo para el producto']
     },
     description: {
         type: String
@@ -14,12 +14,12 @@ const productSchema = new mongoose.Schema({
     id_category: {
         type: mongoose.Types.ObjectId,
         ref: "Category",
-        required: true
+        required: [true, 'Se debe asignar una categoria al producto']
     },
     id_lessor: {
         type: mongoose.Types.ObjectId,
         ref: "User",
-        required: true
+        required: [true, 'Se debe asignar un usuario tipo: Arrendatario al producto']
     },
     status: {
         type: Boolean,

@@ -33,5 +33,4 @@ server.use('/rental-requests', Rental_RequestsRoutes);
 server.use('/rents', Rents);
 
 
-
 export default server;
