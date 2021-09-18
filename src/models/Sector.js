@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 const uniqueValidator = require("mongoose-unique-validator");
 
 const sectorSchema = new mongoose.Schema({
-    title: {
+    name: {
         type: String,
-        required: [true, "Se debe indicar un titulo para el sector"],
+        required: [true, "Se debe indicar un nombre para el sector"],
         index: true,
         unique: true,
         match: [/^[a-zA-Z]+$/, "es inválido, solo se aceptan letras"]

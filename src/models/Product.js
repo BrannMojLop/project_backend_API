@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
-    title: {
+    name: {
         type: String,
         required: [true, 'Se debe indicar un titulo para el producto']
     },

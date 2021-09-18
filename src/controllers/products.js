@@ -4,8 +4,8 @@ const Product = require('../models/Product');
 
 async function showProducts(req, res) {
     await connect();
-    if (req.query.title) {
-        await Product.find({ title: { $regex: req.query.title, $options: "$i" } }, function (err, products) {
+    if (req.query.name) {
+        await Product.find({ name: { $regex: req.query.name, $options: "$i" } }, function (err, products) {
             if (err) {
                 res.status(401).send(err);
             } else if (products.length > 0) {

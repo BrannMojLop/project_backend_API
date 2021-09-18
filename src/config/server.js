@@ -1,4 +1,5 @@
 import express from 'express';
+const swaggerUi = require("swagger-ui-express");
 
 const server = express();
 
@@ -13,6 +14,7 @@ import PeriodsRoutes from '../routes/periods.routes';
 import PublicationsRoutes from '../routes/publications.routes';
 import Rental_RequestsRoutes from '../routes/rentails_requests.routes';
 import Rents from '../routes/rents.routes';
+import SwaggerDocs from '../config/swagger'
 
 // Settings
 server.set('port', process.env.PORT || 4000);
@@ -31,6 +33,6 @@ server.use('/periods', PeriodsRoutes);
 server.use('/publications', PublicationsRoutes);
 server.use('/rental-requests', Rental_RequestsRoutes);
 server.use('/rents', Rents);
-
+server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(SwaggerDocs));
 
 export default server;

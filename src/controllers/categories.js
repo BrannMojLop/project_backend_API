@@ -4,8 +4,8 @@ const Category = require('../models/Category');
 
 async function showCategories(req, res) {
     await connect();
-    if (req.query.title) {
-        await Category.find({ title: req.query.title }, function (err, categories) {
+    if (req.query.name) {
+        await Category.find({ name: req.query.name }, function (err, categories) {
             if (err) {
                 res.status(401).send(err);
             } else if (categories.length > 0) {

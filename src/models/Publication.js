@@ -26,12 +26,10 @@ const publicationSchema = new mongoose.Schema({
         min: [1, 'Solo se pueden existencias igual o mayores a 1']
     },
     location: {
-        type: String,
-        required: [true, 'Es necesario indicar la localidad del producto en renta']
+        type: String
     },
     max_distance: {
         type: Number,
-        required: [true, 'Es necesario indicar la distancia maxima para renta del producto'],
         min: [1, 'Solo se pueden distancias igual o mayores a 1km']
     },
     finished_at: {
