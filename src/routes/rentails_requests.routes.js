@@ -1,4 +1,5 @@
 import { Router } from "express";
+const auth = require('./auth.routes');
 
 const router = Router();
 
@@ -14,13 +15,13 @@ import { createRentalRequest, showRentalRequests, getRentalRequest, updateRental
 }
  */
 
-router.get('/', showRentalRequests);
+router.get('/', auth.requerido, showRentalRequests);
 
-router.get('/:id', getRentalRequest);
+router.get('/:id', auth.requerido, getRentalRequest);
 
-router.post('/', createRentalRequest);
+router.post('/', auth.requerido, createRentalRequest);
 
-router.put('/:id/:answer', updateRentalRequest);
+router.put('/:id/:answer', auth.requerido, updateRentalRequest);
 
 
 export default router;

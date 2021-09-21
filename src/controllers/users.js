@@ -25,8 +25,8 @@ async function showUsers(req, res) {
                 res.status(404).send("No se han encontrado registros");
             }
         })
-    } else if (req.query.username) {
-        await User.find({ username: { $regex: req.query.username, $options: "$i" } }, function (err, users) {
+    } else if (req.query.email) {
+        await User.find({ email: { $regex: req.query.email, $options: "$i" } }, function (err, users) {
             if (err) {
                 res.status(401).send(err);
             } else if (users.length > 0) {
@@ -78,8 +78,25 @@ async function createUser(req, res) {
     })
 }
 
-async function login(req, res) {
-    res.send(req.body);
+async function login(req, res, next) {
+    if (!req.body.email) {
+        return res.status(422).json({ errors: { email: "no puede estar vacío" } });
+    }
+
+    if (!req.body.password) {
+        return res.status(422).json({ errors: { password: "no puede estar vacío" } });
+    }
+
+    passport.authenticate('local', { session: false }, function (err, user, info) {
+        if (err) { return next(err); }
+
+        if (user) {
+            user.token = user.generateJWT();
+            return res.json({ user: user.toAuthJSON() });
+        } else {
+            return res.status(422).json(info);
+        }
+    })(req, res, next);
 }
 
 

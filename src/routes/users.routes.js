@@ -19,17 +19,17 @@ import { createUser, showUsers, getUser, disableUser, updateUser, disableUsers, 
 
 router.get('/', auth.requerido, showUsers);
 
-router.get('/:id', getUser);
+router.get('/:id', auth.requerido, getUser);
 
-router.post('/', createUser);
+router.post('/', auth.opcional, createUser);
 
 router.post('/login', login);
 
-router.put('/:id', updateUser);
+router.put('/:id', auth.requerido, updateUser);
 
-router.delete('/:id', disableUser);
+router.delete('/:id', auth.requerido, disableUser);
 
-router.delete('/', disableUsers);
+router.delete('/', auth.requerido, disableUsers);
 
 
 export default router;

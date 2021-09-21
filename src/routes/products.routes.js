@@ -1,4 +1,5 @@
 import { Router } from "express";
+const auth = require('./auth.routes');
 
 const router = Router();
 
@@ -16,17 +17,17 @@ import { createProduct, showProducts, getProduct, disableProduct, updateProduct,
 }
  */
 
-router.get('/', showProducts);
+router.get('/', auth.requerido, showProducts);
 
-router.get('/:id', getProduct);
+router.get('/:id', auth.requerido, getProduct);
 
-router.post('/', (req, res) => { createProduct(req, res) });
+router.post('/', auth.requerido, createProduct);
 
-router.put('/:id', updateProduct);
+router.put('/:id', auth.requerido, updateProduct);
 
-router.delete('/:id', disableProduct);
+router.delete('/:id', auth.requerido, disableProduct);
 
-router.delete('/', disableProducts);
+router.delete('/', auth.requerido, disableProducts);
 
 
 export default router;

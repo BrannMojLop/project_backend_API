@@ -1,5 +1,6 @@
 import { Router } from "express";
 const router = Router();
+const auth = require('./auth.routes');
 
 // Controllers
 import { createPublication, showPublications, getPublication, disablePublication, updatePublication, disablePublications } from "../controllers/publications";
@@ -15,17 +16,17 @@ import { createPublication, showPublications, getPublication, disablePublication
 }
  */
 
-router.get('/', showPublications);
+router.get('/', auth.opcional, showPublications);
 
-router.get('/:id', getPublication);
+router.get('/:id', auth.opcional, getPublication);
 
-router.post('/', createPublication);
+router.post('/', auth.requerido, createPublication);
 
-router.put('/:id', updatePublication);
+router.put('/:id', auth.requerido, updatePublication);
 
-router.delete('/:id', disablePublication);
+router.delete('/:id', auth.requerido, disablePublication);
 
-router.delete('/', disablePublications);
+router.delete('/', auth.requerido, disablePublications);
 
 
 export default router;

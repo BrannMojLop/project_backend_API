@@ -1,4 +1,5 @@
 import { Router } from "express";
+const auth = require('./auth.routes');
 
 const router = Router();
 
@@ -16,17 +17,17 @@ import { createPeriod, showPeriods, getPeriod, disablePeriod, updatePeriod, disa
 }
  */
 
-router.get('/', showPeriods);
+router.get('/', auth.requerido, showPeriods);
 
-router.get('/:id', getPeriod);
+router.get('/:id', auth.requerido, getPeriod);
 
-router.post('/', createPeriod);
+router.post('/', auth.requerido, createPeriod);
 
-router.put('/:id', updatePeriod);
+router.put('/:id', auth.requerido, updatePeriod);
 
-router.delete('/:id', disablePeriod);
+router.delete('/:id', auth.requerido, disablePeriod);
 
-router.delete('/', disablePeriods);
+router.delete('/', auth.requerido, disablePeriods);
 
 
 export default router;

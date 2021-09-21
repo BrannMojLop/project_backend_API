@@ -1,4 +1,5 @@
 import { Router } from "express";
+const auth = require('./auth.routes');
 
 const router = Router();
 
@@ -16,17 +17,17 @@ import { createCategory, showCategories, getCategory, disableCategory, updateCat
 }
  */
 
-router.get('/', showCategories);
+router.get('/', auth.requerido, showCategories);
 
-router.get('/:id', getCategory);
+router.get('/:id', auth.requerido, getCategory);
 
-router.post('/', createCategory);
+router.post('/', auth.requerido, createCategory);
 
-router.put('/:id', updateCategory);
+router.put('/:id', auth.requerido, updateCategory);
 
-router.delete('/:id', disableCategory);
+router.delete('/:id', auth.requerido, disableCategory);
 
-router.delete('/', disableCategories);
+router.delete('/', auth.requerido, disableCategories);
 
 
 export default router;

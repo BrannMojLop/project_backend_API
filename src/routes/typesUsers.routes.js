@@ -1,4 +1,5 @@
 import { Router } from "express";
+const auth = require('./auth.routes');
 
 const router = Router();
 
@@ -16,17 +17,17 @@ import { createTypeUser, showTypesUsers, getTypeUser, disableTypeUser, updateTyp
 }
  */
 
-router.get('/', showTypesUsers);
+router.get('/', auth.requerido, showTypesUsers);
 
-router.get('/:id', getTypeUser);
+router.get('/:id', auth.requerido, getTypeUser);
 
-router.post('/', createTypeUser);
+router.post('/', auth.requerido, createTypeUser);
 
-router.put('/:id', updateTypeUser);
+router.put('/:id', auth.requerido, updateTypeUser);
 
-router.delete('/:id', disableTypeUser);
+router.delete('/:id', auth.requerido, disableTypeUser);
 
-router.delete('/', disableTypesUsers);
+router.delete('/', auth.requerido, disableTypesUsers);
 
 
 export default router;

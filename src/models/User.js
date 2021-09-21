@@ -36,13 +36,15 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
         default: true
-    }
+    },
+    hash: String,
+    salt: String
 }, { timestamps: true })
 
 userSchema.methods.createPassword = function (password) {
     this.salt = crypto.randomBytes(16).toString("hex");
     this.hash = crypto
-        .pbkdf2Sync(password, this.salt, 100000, 512, "sha512")
+        .pbkdf2Sync(password, this.salt, 10000, 512, "sha512")
         .toString("hex");
 };
 
@@ -69,6 +71,7 @@ userSchema.methods.toAuthJSON = function () {
     return {
         username: this.username,
         email: this.email,
+        typeUser: this.id_type,
         token: this.generateJWT()
     };
 };
