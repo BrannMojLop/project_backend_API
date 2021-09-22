@@ -24,6 +24,8 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/Sector'
+        '401':
+          description: Permission Denied
       security:
         - bearerAuth: []
 
@@ -78,6 +80,8 @@ paths:
                 schema:
                   type: string
                   example: Sectores Deshabilitados con Exito
+        '401':
+          description: Permission Denied
       security:
         - bearerAuth: []
 
@@ -148,6 +152,8 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemasError/DisableSector'
+        '401':
+          description: Permission Denied
       security:
         - bearerAuth: []
 
@@ -186,5 +192,7 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemasError/DisableSector'
+        '401':
+          description: Permission Denied
       security:
         - bearerAuth: []
