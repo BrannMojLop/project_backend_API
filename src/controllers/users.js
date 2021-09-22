@@ -5,53 +5,61 @@ const passport = require('passport');
 
 async function showUsers(req, res) {
     await connect();
-    if (req.query.firstname) {
-        await User.find({ firstname: { $regex: req.query.firstname, $options: "$i" } }, function (err, users) {
-            if (err) {
-                res.status(401).send(err);
-            } else if (users.length > 0) {
-                res.status(200).send(users);
-            } else {
-                res.status(404).send("No se han encontrado registros");
-            }
-        })
-    } else if (req.query.lastname) {
-        await User.find({ lastname: { $regex: req.query.lastname, $options: "$i" } }, function (err, users) {
-            if (err) {
-                res.status(401).send(err);
-            } else if (users.length > 0) {
-                res.status(200).send(users);
-            } else {
-                res.status(404).send("No se han encontrado registros");
-            }
-        })
-    } else if (req.query.email) {
-        await User.find({ email: { $regex: req.query.email, $options: "$i" } }, function (err, users) {
-            if (err) {
-                res.status(401).send(err);
-            } else if (users.length > 0) {
-                res.status(200).send(users);
-            } else {
-                res.status(404).send("No se han encontrado registros");
-            }
-        })
-    } else if (req.query.email) {
-        await User.find({ email: { $regex: req.query.email, $options: "$i" } }, function (err, users) {
-            if (err) {
-                res.status(401).send(err);
-            } else if (users.length > 0) {
-                res.status(200).send(users);
-            } else {
-                res.status(404).send("No se han encontrado registros");
-            }
-        })
-    } else {
-        const users = await User.find();
-        if (users.length === 0) {
-            res.send("No se han encontrado registros");
+
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+
+    if (type === 1) {
+        if (req.query.firstname) {
+            await User.find({ firstname: { $regex: req.query.firstname, $options: "$i" } }, function (err, users) {
+                if (err) {
+                    res.status(401).send(err);
+                } else if (users.length > 0) {
+                    res.status(200).send(users);
+                } else {
+                    res.status(404).send("No se han encontrado registros");
+                }
+            })
+        } else if (req.query.lastname) {
+            await User.find({ lastname: { $regex: req.query.lastname, $options: "$i" } }, function (err, users) {
+                if (err) {
+                    res.status(401).send(err);
+                } else if (users.length > 0) {
+                    res.status(200).send(users);
+                } else {
+                    res.status(404).send("No se han encontrado registros");
+                }
+            })
+        } else if (req.query.email) {
+            await User.find({ email: { $regex: req.query.email, $options: "$i" } }, function (err, users) {
+                if (err) {
+                    res.status(401).send(err);
+                } else if (users.length > 0) {
+                    res.status(200).send(users);
+                } else {
+                    res.status(404).send("No se han encontrado registros");
+                }
+            })
+        } else if (req.query.email) {
+            await User.find({ email: { $regex: req.query.email, $options: "$i" } }, function (err, users) {
+                if (err) {
+                    res.status(401).send(err);
+                } else if (users.length > 0) {
+                    res.status(200).send(users);
+                } else {
+                    res.status(404).send("No se han encontrado registros");
+                }
+            })
         } else {
-            res.status(200).send(users);
+            const users = await User.find();
+            if (users.length === 0) {
+                res.send("No se han encontrado registros");
+            } else {
+                res.status(200).send(users);
+            }
         }
+    } else {
+        res.status(401).send("Permisos insuficientes")
     }
 }
 
@@ -102,58 +110,101 @@ async function login(req, res, next) {
 
 async function getUser(req, res) {
     await connect();
-    const user = await User.findById(req.params.id);
+
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+    const userSearch = await User.findById(req.params.id);
     if (!user) {
-        res.status(401).send("No se han encontrado registros");
+        res.status(204).send("No se han encontrado registros");
     } else {
-        res.status(200).send(user);
+        if (type === 1) {
+            res.status(200).send(userSearch.publicData());
+        } else if (user.id == userSearch._id) {
+            res.status(200).send(userSearch.publicData());
+        } else {
+            res.status(401).send("Permisos insuficientes")
+        }
     }
 }
 
 async function updateUser(req, res) {
     await connect();
 
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+    const userSearch = await User.findById(req.params.id);
     if (!user) {
-        res.status(401).send("No se han encontrado el registro");
+        res.status(204).send("No se han encontrado registros");
     } else {
-        await User.findByIdAndUpdate(req.params.id, {
-            $set: req.body
-        });
-        res.status(200).send({
-            message: 'Usuario Actualizado con Exito'
-        });
+        if (type === 1) {
+            await User.findByIdAndUpdate(req.params.id, {
+                $set: req.body
+            });
+            res.status(200).send({
+                message: 'Usuario Actualizado con Exito'
+            });
+        } else if (user.id == userSearch._id) {
+            await User.findByIdAndUpdate(req.params.id, {
+                $set: req.body
+            });
+            res.status(200).send({
+                message: 'Usuario Actualizado con Exito'
+            });
+        } else {
+            res.status(401).send("Permisos insuficientes")
+        }
     }
 }
 
 async function disableUser(req, res) {
     await connect();
 
-    const user = await User.findById(req.params.id);
-    if (!user) {
-        res.status(401).send("No se han encontrado el registro");
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+
+    if (type === 1) {
+        const user = await User.findById(req.params.id, function (err) {
+            if (err) {
+                res.status(400).json({
+                    error: err.name,
+                    message: err.message
+                })
+            }
+        });
+        if (!user) {
+            res.status(401).send("No se han encontrado el registro");
+        } else {
+            await User.findByIdAndUpdate(req.params.id, {
+                "status": false
+            });
+            res.status(200).send({
+                message: 'Usuario Deshabilitado con Exito'
+            });
+        }
     } else {
-        await User.findByIdAndUpdate(req.params.id, {
-            "status": false
-        });
-        res.status(200).send({
-            message: 'Usuario Deshabilitado con Exito'
-        });
+        res.status(401).send("Permisos insuficientes")
     }
 }
 
 async function disableUsers(req, res) {
     await connect();
 
-    await User.updateMany({ "status": false }, function (err, users) {
-        if (err) {
-            res.status(401).send("No se han encontrado el registros");
-        } else {
-            res.status(200).send({
-                message: 'Usuarios Deshabilitados con Exito'
-            });
-        }
-    });
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+
+    if (type === 1) {
+        await User.updateMany({ "status": false }, function (err, users) {
+            if (err) {
+                res.status(401).send("No se han encontrado el registros");
+            } else {
+                res.status(200).send({
+                    message: 'Usuarios Deshabilitados con Exito'
+                });
+            }
+        });
+    } else {
+        res.status(401).send("Permisos insuficientes")
+    }
 }
 
 // exportamos las funciones definidas

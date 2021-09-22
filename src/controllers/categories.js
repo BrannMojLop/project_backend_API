@@ -1,5 +1,7 @@
 const connect = require('../config/database');
 const Category = require('../models/Category');
+const User = require('../models/User');
+
 
 
 async function showCategories(req, res) {
@@ -39,77 +41,124 @@ async function createCategory(req, res) {
     const category = new Category(req.body)
 
     await connect();
-    await category.save(function (err) {
-        if (err) {
-            res.status(400).json({
-                success: false,
-                type: err.name,
-                error: err.message
-            });
-        } else {
-            res.status(201).json({
-                success: "Categoria creada con Exito",
-                category: category
-            });
-        }
-    });
+
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+
+    if (type === 1) {
+        await category.save(function (err) {
+            if (err) {
+                res.status(400).json({
+                    success: false,
+                    type: err.name,
+                    error: err.message
+                });
+            } else {
+                res.status(201).json({
+                    success: "Categoria creada con Exito",
+                    category: category
+                });
+            }
+        });
+    } else {
+        res.status(401).send("Permisos insuficientes")
+    }
 }
 
 
 async function getCategory(req, res) {
     await connect();
-    const category = await Category.findById(req.params.id);
-    if (!category) {
-        res.status(401).send("No se han encontrado registros");
-    } else {
-        res.status(200).send(category);
+    try {
+        const category = await Category.findById(req.params.id);
+        if (!category) {
+            res.status(204).send("No se han encontrado registros");
+        } else {
+            res.status(200).send(category);
+        }
+    } catch (err) {
+        res.status(400).send(err)
     }
 }
 
 async function updateCategory(req, res) {
     await connect();
 
-    const category = await Category.findById(req.params.id);
-    if (!category) {
-        res.status(401).send("No se han encontrado el registro");
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+
+    if (type === 1) {
+        const category = await Category.findById(req.params.id, function (err) {
+            if (err) {
+                res.status(400).json({
+                    error: err.name,
+                    message: err.message
+                })
+            }
+        });
+        if (!category) {
+            res.status(401).send("No se han encontrado el registro");
+        } else {
+            await Category.findByIdAndUpdate(req.params.id, {
+                $set: req.body
+            });
+            res.status(200).send({
+                message: 'Categoria Actualizada con Exito'
+            });
+        }
     } else {
-        await Category.findByIdAndUpdate(req.params.id, {
-            $set: req.body
-        });
-        res.status(200).send({
-            message: 'Categoria Actualizada con Exito'
-        });
+        res.status(401).send("Permisos insuficientes")
     }
 }
 
 async function disableCategory(req, res) {
     await connect();
 
-    const category = await Category.findById(req.params.id);
-    if (!category) {
-        res.status(401).send("No se han encontrado el registro");
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+
+    if (type === 1) {
+        const category = await Category.findById(req.params.id, function (err) {
+            if (err) {
+                res.status(400).json({
+                    error: err.name,
+                    message: err.message
+                })
+            }
+        });
+        if (!category) {
+            res.status(401).send("No se han encontrado el registro");
+        } else {
+            await Category.findByIdAndUpdate(req.params.id, {
+                $set: req.body
+            });
+            res.status(200).send({
+                message: 'Categoria Deshabilitada con Exito'
+            });
+        }
     } else {
-        await Category.findByIdAndUpdate(req.params.id, {
-            "status": false
-        });
-        res.status(200).send({
-            message: 'Categoria Deshabilitada con Exito'
-        });
+        res.status(401).send("Permisos insuficientes")
     }
 }
 
 async function disableCategories(req, res) {
     await connect();
 
-    const category = await Category.updateMany({ "status": false }, function (err, categories) {
-        if (err) {
-            res.status(401).send("No se han encontrado el registros");
-        } else {
-            res.status(200).send({
-                message: 'Categorias Deshabilitados con Exito'
-            });
-        }
-    });
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+
+    if (type === 1) {
+        const category = await Category.updateMany({ "status": false }, function (err, categories) {
+            if (err) {
+                res.status(401).send("No se han encontrado el registros");
+            } else {
+                res.status(200).send({
+                    message: 'Categorias Deshabilitados con Exito'
+                });
+            }
+        });
+    } else {
+        res.status(401).send("Permisos insuficientes")
+    }
 }
 
 // exportamos las funciones definidas
