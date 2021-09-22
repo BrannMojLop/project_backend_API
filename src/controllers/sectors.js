@@ -5,6 +5,7 @@ const Sector = require('../models/Sector');
 async function showSectors(req, res) {
     await connect();
     if (req.query.name) {
+        console.log(req.query.name);
         await Sector.find({ name: { $regex: req.query.name, $options: "$i" } }, function (err, sectors) {
             if (err) {
                 res.status(401).send(err);
@@ -51,19 +52,26 @@ async function getSector(req, res) {
     try {
         const sector = await Sector.findById(req.params.id);
         if (!sector) {
-            res.status(200).send("No se han encontrado registros");
+            res.status(204).send("No se han encontrado registros");
         } else {
             res.status(200).send(sector);
         }
     } catch (err) {
-        res.status(401).send(err)
+        res.status(400).send(err)
     }
 }
 
 async function updateSector(req, res) {
     await connect();
 
-    const sector = await Sector.findById(req.params.id);
+    const sector = await Sector.findById(req.params.id, function (err) {
+        if (err) {
+            res.status(400).json({
+                error: err.name,
+                message: err.message
+            })
+        }
+    });
     if (!sector) {
         res.status(401).send("No se han encontrado el registro");
     } else {
@@ -79,9 +87,16 @@ async function updateSector(req, res) {
 async function disableSector(req, res) {
     await connect();
 
-    const sector = await Sector.findById(req.params.id);
+    const sector = await Sector.findById(req.params.id, function (err) {
+        if (err) {
+            res.status(400).json({
+                error: err.name,
+                message: err.message
+            })
+        }
+    });
     if (!sector) {
-        res.status(401).send("No se han encontrado el registro");
+        res.status(204).send("No se han encontrado el registro");
     } else {
         await Sector.findByIdAndUpdate(req.params.id, {
             "status": false
@@ -95,9 +110,9 @@ async function disableSector(req, res) {
 async function disableSectors(req, res) {
     await connect();
 
-    const sector = await Sector.updateMany({ "status": false }, function (err, sectors) {
+    await Sector.updateMany({ "status": false }, function (err, sectors) {
         if (err) {
-            res.status(401).send("No se han encontrado el registros");
+            res.status(204).send("No se han encontrado el registros");
         } else {
             res.status(200).send({
                 message: 'Sectores Deshabilitados con Exito'

@@ -6,7 +6,7 @@ const typeUserSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        match: [/^[a-zA-Z0-9]+$/, "es inválido, no puede contener caracteres especiales"]
+        match: [/^[a-zA-Z0-9_ ]+$/, "es inválido, no puede contener caracteres especiales"]
     },
     type: {
         type: Number,

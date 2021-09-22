@@ -1,18 +1,20 @@
-definitions:
+components:
+  schemas:
      Sector:
        type: object
        properties:
          _id:
            type: ObjectId
            description: Identificador Unico de cada Sector
+           example: 613fa0a4b37dee626ed7e52f
          name:
            type: string
            description: Nombre del Sector de Productos
-           example: Herramientas de Construccion
+           example: Herramientas
          description:
            type: string
            description: Descripcion del tipo de Sector
-           example: Herramientas de contruccion en general
+           example: Herramientas en general
          status:
            type: boolean,
            description: Indica si el Sector esta activo o desactivado
@@ -23,10 +25,12 @@ definitions:
            type: Date
            description: Fecha de creacion del Sector
            format: date-time
+           example: 2021-09-13T19:04:04.310Z
          updated_at:
            type: Date
            description: Uiltima fecha de actualizacion del Sector
            format: date-time
+           example: 2021-09-13T19:04:04.310Z
        required:  
           - _id
           - name
@@ -45,9 +49,9 @@ definitions:
          description:
            type: string
            description: Descripcion de la categoria
-           example: Para uso Domestico
+           example: Uso Domestico
          id_sector:
-           $ref: '#definitions/Sector'
+           $ref: '#/components/schemas/Sector'
          status:
            type: boolean,
            description: Indica si la Categoria esta activa o desactivada
@@ -118,9 +122,9 @@ definitions:
            type: string
            description: URL de la imagen del producto
          id_lessor:
-           $ref: '#definitions/User'
+           $ref: '#/components/schemas/User'
          id_category:
-           $ref: '#definitions/Category'
+           $ref: '#/components/schemas/Category'
          status:
            type: boolean,
            description: Indica si el Producto esta activo o desactivado
@@ -181,7 +185,7 @@ definitions:
            type: ObjectId
            description: Identificador Unico de cada Renta
          id_rentalRequest:
-           $ref: '#definitions/RentalRequest'
+           $ref: '#/components/schemas/RentalRequest'
          payment:
            type: boolean
            description: Indica el estatus del pago de la renta
@@ -238,7 +242,7 @@ definitions:
            type: string
            description: Username del Usuario
          id_type:
-           $ref: '#definitions/TypeUser'
+           $ref: '#/components/schemas/TypeUser'
          status:
            type: boolean,
            description: Indica si el Usuario esta activo o desactivado
@@ -270,7 +274,7 @@ definitions:
            description: Titulo de la publicacion
            example: Moto en Venta, accesible en la CDMX
          id_product:
-           $ref: '#definitions/Product'
+           $ref: '#/components/schemas/Product'
          prices:
            type: Array
            description: Listado de precios por renta
@@ -323,11 +327,11 @@ definitions:
            type: ObjectId
            description: Identificador Unico de cada Solicitud de Renta
          id_lessee:
-           $ref: '#definitions/User'
+           $ref: '#/components/schemas/User'
          id_lessor:
-           $ref: '#definitions/User'
+           $ref: '#/components/schemas/User'
          id_publication:
-           $ref: '#definitions/Publication'
+           $ref: '#/components/schemas/Publication'
          contract:
           type: Object
           description: Contiene el contrato elegido por el Arrendador, periodo y precio
@@ -356,3 +360,59 @@ definitions:
           - id_publication
           - contract
           - answer
+
+  schemasError:
+    CreateSector:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        type:
+          description: Indica el tipo de error
+          type: string
+          example: ValidationError
+        error:
+          type: string
+          description: Describe el error obtenido
+          example: Ya existe un sector con este nombre
+    DisableSector:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Indica el tipo de error
+          example: CastError
+        message:
+          description: Describe el error obtenido
+          type: string
+          example: Cast to ObjectId failed for value
+
+  requestBodies:
+    Sector:
+      description: Un objeto JSON que contiene la informacion del Sector
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+             name:
+               type: string
+               required: true
+               description: Nombre del Sector de Productos
+               example: Herramientas
+             description:
+               type: string
+               required: true
+               description: Descripcion del tipo de Sector
+               example: Herramientas en general
+
+  securitySchemes:
+    bearerAuth:  
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    
+
+security:
+  - bearerAuth: [] 

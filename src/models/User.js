@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     },
     lastname: {
         type: String,
-        match: [/^[a-zA-Z]+$/, "es inválido, solo puede contener letras"]
+        match: [/^[a-zA-Z_ ]+$/, "es inválido, solo puede contener letras"]
     },
     email: {
         type: String,

@@ -6,7 +6,7 @@ const periodSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        match: [/^[a-zA-Z]+$/, "es inválido, solo se aceptan letras"]
+        match: [/^[a-zA-Z0-9_ ]+$/, "es inválido, solo se aceptan letras"]
     },
     days: {
         type: Number,

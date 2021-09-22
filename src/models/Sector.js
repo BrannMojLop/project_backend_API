@@ -7,7 +7,7 @@ const sectorSchema = new mongoose.Schema({
         required: [true, "Se debe indicar un nombre para el sector"],
         index: true,
         unique: true,
-        match: [/^[a-zA-Z]+$/, "es inválido, solo se aceptan letras"]
+        match: [/^[a-zA-Z0-9_ ]+$/, "es inválido, solo se aceptan letras"]
     },
     description: String,
     status: {

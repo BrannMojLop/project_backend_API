@@ -2,20 +2,24 @@ const swaggerJsdoc = require("swagger-jsdoc");
 
 const options = {
     definition: {
+        openapi: '3.0.0',
+        components: {},
         info: {
             title: "Income-System",
             version: "1.0.0",
             description:
-                "API de CRUD completos para el dearrollo de un Sistema Web de Renta de Productos",
+                "API de control y gestionamiento para el desarrollo de un Sistema de Renta de Productos",
             contact: {
-                name: "Brandon Mojica Lopez",
-                url: "https://github.com/BrannMojLop",
+                name: "Equipo 5, BEDU",
+                url: "https://github.com/https://github.com/BrannMojLop/project_backend_API",
                 email: "brandonmojica95@gmail.com"
             }
         },
+        basePath: './src/documentation',
         servers: [
             {
                 url: "http://localhost:4000",
+                description: 'Servidor de Desarrollo'
             },
         ],
     },
