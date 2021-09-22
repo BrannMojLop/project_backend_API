@@ -1,45 +1,33 @@
 import { Router } from "express";
-const { check, validationResult } = require('express-validator');
+const auth = require('./auth.routes');
 
 const router = Router();
 
 // Controllers
-import { createProduct, showProducts, getProduct, deleteProduct, updateProduct, deleteProducts } from "../controllers/products";
+import { createProduct, showProducts, getProduct, disableProduct, updateProduct, disableProducts } from "../controllers/products";
 
 /* Routes = {
     (post '/') => createProduct: "Crear un nuevo producto"
     (get '/') => showProducts: "Mostrar todos los productos existentes"
+    (get '/?title?id_lessor?id_category') => showproducts: "Mostrar todos los productos filtrados"
     (post '/:id') => getProduct: "Mostrar un producto por ID"
     (put '/:id') => updateProduct: "Editar un producto por ID"
-    (delete '/:id') => deleteProduct: "Deshabilitar un producto por ID"
-    (delete '/') => deleteProducts: "Deshabilitar todos los productos existentes"
+    (delete '/:id') => disableProduct: "Deshabilitar un producto por ID"
+    (delete '/') => disableProducts: "Deshabilitar todos los productos existentes"
 }
  */
 
-router.get('/', showProducts);
+router.get('/', auth.requerido, showProducts);
 
-router.get('/:id', getProduct);
+router.get('/:id', auth.requerido, getProduct);
 
-router.post('/', [
-    check('title').isLength({ min: 3 }),
-    check('id_category').isLength({ min: 3 }),
-    check('id_lessor').isLength({ min: 3 }),
-    check('image').isLength({ min: 3 }),
-    check('status').isBoolean()
-], async function (req, res) {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() })
-    } else {
-        createProduct(req, res);
-    }
-})
+router.post('/', auth.requerido, createProduct);
 
-router.put('/:id', updateProduct);
+router.put('/:id', auth.requerido, updateProduct);
 
-router.delete('/:id', deleteProduct);
+router.delete('/:id', auth.requerido, disableProduct);
 
-router.delete('/', deleteProducts);
+router.delete('/', auth.requerido, disableProducts);
 
 
 export default router;

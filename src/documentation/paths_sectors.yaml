@@ -1,0 +1,190 @@
+paths:
+  /sectors:
+    post:
+      tags: 
+        - Sectores
+      summary: Crear un nuevo sector de productos
+      operationId: addSector
+      requestBody: 
+        $ref: '#/components/requestBodies/Sector'
+      responses:
+        '400':
+          description: Invalid input
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemasError/CreateSector'
+        '201':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Sector'
+      security:
+        - bearerAuth: []
+
+    get:
+      tags: 
+        - Sectores
+      summary: Obtener todos los sectores por nombre
+      operationId: getSectors
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+            description: Nombre del sector o sectores que contengan cierta relacion con en texto ingresado
+            example: herramienta
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Sector'
+        '400':
+          description: Invalid request
+
+    delete:
+      tags: 
+        - Sectores
+      summary: Deshabilitar todos los sectores
+      operationId: delSectors
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado el registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: Sectores Deshabilitados con Exito
+      security:
+        - bearerAuth: []
+
+  /sectors{id}:
+    get:
+      tags: 
+        - Sectores
+      summary: Obtener un sector por ID
+      operationId: getSector
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Identificador unico de cada sector
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Sector'
+        '400':
+          description: Invalid request
+
+    put:
+      tags: 
+        - Sectores
+      summary: Editar un sector por ID
+      operationId: putSector
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Identificador unico de cada sector
+      requestBody: 
+        $ref: '#/components/requestBodies/Sector'
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: Sector Actualizado con Exito
+        '400':
+          description: Invalid input
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemasError/DisableSector'
+      security:
+        - bearerAuth: []
+
+    delete:
+      tags: 
+        - Sectores
+      summary: Deshabilitar un sector por ID
+      operationId: delSector
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Identificador unico de cada sector
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: Sector Deshabilitado con Exito
+        '400':
+          description: Invalid input
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemasError/DisableSector'
+      security:
+        - bearerAuth: []

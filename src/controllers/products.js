@@ -1,103 +1,123 @@
-import { connect } from "../config/database";
-import { ObjectId } from "mongodb";
-const Product = require('../models/product');
+const connect = require('../config/database');
+const Product = require('../models/Product');
 
 
 async function showProducts(req, res) {
-    const db = await connect();
-    const result = await db.collection('products').find({}).toArray();
-    if (result.length == 0) {
-        res.status(404).send({
-            "message": "No se encontraron registros",
-        });
+    await connect();
+    if (req.query.name) {
+        await Product.find({ name: { $regex: req.query.name, $options: "$i" } }, function (err, products) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (products.length > 0) {
+                res.status(200).send(products);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
+    } else if (req.query.id_lessor) {
+        await Product.find({ id_lessor: req.query.id_lessor }, function (err, products) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (products.length > 0) {
+                res.status(200).send(products);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
+    } else if (req.query.id_category) {
+        await Product.find({ id_category: req.query.id_category }, function (err, products) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (products.length > 0) {
+                res.status(200).send(products);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
     } else {
-        res.json(result);
+        const products = await Product.find();
+        if (products.length === 0) {
+            res.send("No se han encontrado registros");
+        } else {
+            res.status(200).send(products);
+        }
     }
 }
 
 async function createProduct(req, res) {
-    const { title, description, image, id_category, id_lessor, status } = req.body;
-    const product = new Product(title, description, image, id_category, id_lessor, status);
-    const db = await connect();
-    await db.collection('products').insertOne(product);
-    res.send({
-        message: "Producto Creado con Exito",
+    const product = new Product(req.body)
+
+    await connect();
+    await product.save(function (err) {
+        if (err) {
+            res.status(400).json({
+                success: false,
+                type: err.title,
+                error: err.message
+            });
+        } else {
+            res.status(201).json({
+                success: "Producto creado con Exito",
+                Product: product
+            });
+        }
     });
 }
 
 async function getProduct(req, res) {
-    try {
-        const db = await connect();
-        const result = await db.collection('products').find({
-            _id: ObjectId(req.params.id)
-        }).toArray();
-        res.json(result);
-    } catch (err) {
-        res.status(404).send({
-            "message": "Producto no encontrado",
-        })
+    await connect();
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+        res.status(401).send("No se han encontrado registros");
+    } else {
+        res.status(200).send(product);
     }
 }
 
 async function updateProduct(req, res) {
+    await connect();
 
-    const dataUpdate = {};
-    Object.keys(req.body).forEach(atributo => {
-        if (atributo !== "create_at" && atributo !== "update_at") {
-            dataUpdate[atributo] = req.body[atributo];
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+        res.status(401).send("No se han encontrado el registro");
+    } else {
+        await Product.findByIdAndUpdate(req.params.id, {
+            $set: req.body
+        });
+        res.status(200).send({
+            message: 'Producto Actualizado con Exito'
+        });
+    }
+}
+
+async function disableProduct(req, res) {
+    await connect();
+
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+        res.status(401).send("No se han encontrado el registro");
+    } else {
+        await Product.findByIdAndUpdate(req.params.id, {
+            "status": false
+        });
+        res.status(200).send({
+            message: 'Producto Deshabilitado con Exito'
+        });
+    }
+}
+
+async function disableProducts(req, res) {
+    await connect();
+
+    await Product.updateMany({ "status": false }, function (err, products) {
+        if (err) {
+            res.status(401).send("No se han encontrado el registros");
+        } else {
+            res.status(200).send({
+                message: 'Productos Deshabilitados con Exito'
+            });
         }
     });
-
-    const db = await connect();
-
-    await db.collection("products").updateOne({
-        _id: ObjectId(req.params.id)
-    }, {
-        $set: dataUpdate
-    });
-    res.send({
-        message: 'Producto Actualizado con Exito'
-    });
-
-}
-
-async function deleteProduct(req, res) {
-    const db = await connect();
-    try {
-        await db.collection('products').updateOne({
-            _id: ObjectId(req.params.id)
-        }, {
-            $set: {
-                "status": false
-            }
-        });
-        res.send({
-            "message": `Producto Eliminado con Exito`
-        });
-    } catch (err) {
-        res.status(404).send({
-            "message": "Producto no encontrado",
-        })
-    }
-}
-
-async function deleteProducts(req, res) {
-    const db = await connect();
-    try {
-        await db.collection('products').updateMany({
-        }, {
-            $set: {
-                "status": false
-            }
-        });
-        res.send({
-            "message": `Productos Eliminados con Exito`
-        });
-    } catch (err) {
-        res.status(404).send({
-            "message": "Productos no Eliminados",
-        })
-    }
 }
 
 // exportamos las funciones definidas
@@ -105,7 +125,7 @@ module.exports = {
     createProduct,
     showProducts,
     getProduct,
-    deleteProduct,
+    disableProduct,
     updateProduct,
-    deleteProducts
+    disableProducts
 }

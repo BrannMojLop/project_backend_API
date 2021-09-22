@@ -1,42 +1,33 @@
 import { Router } from "express";
-const { check, validationResult } = require('express-validator');
+const auth = require('./auth.routes');
 
 const router = Router();
 
 // Controllers
-import { createPeriod, showPeriods, getPeriod, deletePeriod, updatePeriod, deletePeriods } from "../controllers/periods";
+import { createPeriod, showPeriods, getPeriod, disablePeriod, updatePeriod, disablePeriods } from "../controllers/periods";
 
 /* Routes = {
     (post '/') => createPeriod: "Crear un nuevo periodo de renta de productos"
     (get '/') => showPeriods: "Mostrar todas los periodos de renta"
+    (get '/?title') => showperiods: "Mostrar todos los periodos filtrados"
     (post '/:id') => getPeriod: "Mostrar un periodo de renta de productos por ID"
     (put '/:id') => updatePeriod: "Editar un periodo de renta de productos por ID"
-    (delete '/:id') => deletePeriod: "Deshabilitar un periodo de renta de productos por ID"
-    (delete '/') => deletePeriods: "Deshabilitar todos los periodos de renta"
+    (delete '/:id') => disablePeriod: "Deshabilitar un periodo de renta de productos por ID"
+    (delete '/') => disablePeriods: "Deshabilitar todos los periodos de renta"
 }
  */
 
-router.get('/', showPeriods);
+router.get('/', auth.requerido, showPeriods);
 
-router.get('/:id', getPeriod);
+router.get('/:id', auth.requerido, getPeriod);
 
-router.post('/', [
-    check('name').isLength({ min: 3 }),
-    check('days').isNumeric()
-], async function (req, res) {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() })
-    } else {
-        createPeriod(req, res);
-    }
-})
+router.post('/', auth.requerido, createPeriod);
 
-router.put('/:id', updatePeriod);
+router.put('/:id', auth.requerido, updatePeriod);
 
-router.delete('/:id', deletePeriod);
+router.delete('/:id', auth.requerido, disablePeriod);
 
-router.delete('/', deletePeriods);
+router.delete('/', auth.requerido, disablePeriods);
 
 
 export default router;

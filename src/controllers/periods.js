@@ -1,101 +1,105 @@
-import { connect } from "../config/database";
-import { ObjectId } from "mongodb";
-const Period = require('../models/period');
+const connect = require('../config/database');
+const Period = require('../models/Period');
 
 
 async function showPeriods(req, res) {
-    const db = await connect();
-    const result = await db.collection('periods').find({}).toArray();
-    if (result.length == 0) {
-        res.status(404).send({
-            "message": "No se encontraron registros",
-        });
+    await connect();
+    if (req.query.name) {
+        await Period.find({ $regex: req.query.name, $options: "$i" }, function (err, periods) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (periods.length > 0) {
+                res.status(200).send(periods);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
     } else {
-        res.json(result);
+        const periods = await Period.find();
+        if (periods.length === 0) {
+            res.send("No se han encontrado registros");
+        } else {
+            res.status(200).send(periods);
+        }
     }
 }
 
+
 async function createPeriod(req, res) {
-    const { name, days } = req.body;
-    const period = new Period(name, days);
-    const db = await connect();
-    await db.collection('periods').insertOne(period);
-    res.send({
-        message: "Periodo Creado con Exito",
+    const period = new Period(req.body)
+
+    await connect();
+    await period.save(function (err) {
+        if (err) {
+            res.status(400).json({
+                success: false,
+                type: err.name,
+                error: err.message
+            });
+        } else {
+            res.status(201).json({
+                success: "Periodo creado con Exito",
+                Period: period
+            });
+        }
     });
 }
 
+
 async function getPeriod(req, res) {
-    try {
-        const db = await connect();
-        const result = await db.collection('periods').find({
-            _id: ObjectId(req.params.id)
-        }).toArray();
-        res.json(result);
-    } catch (err) {
-        res.status(404).send({
-            "message": "Periodo no encontrado",
-        })
+    await connect();
+    const period = await Period.findById(req.params.id);
+    if (!period) {
+        res.status(401).send("No se han encontrado registros");
+    } else {
+        res.status(200).send(period);
     }
 }
 
 async function updatePeriod(req, res) {
-    const dataUpdate = {};
-    Object.keys(req.body).forEach(atributo => {
-        if (atributo !== "create_at" && atributo !== "update_at") {
-            dataUpdate[atributo] = req.body[atributo];
+    await connect();
+
+    const period = await Period.findById(req.params.id);
+    if (!period) {
+        res.status(401).send("No se han encontrado el registro");
+    } else {
+        await Period.findByIdAndUpdate(req.params.id, {
+            $set: req.body
+        });
+        res.status(200).send({
+            message: 'Periodo Actualizado con Exito'
+        });
+    }
+}
+
+async function disablePeriod(req, res) {
+    await connect();
+
+    const period = await Period.findById(req.params.id);
+    if (!period) {
+        res.status(401).send("No se han encontrado el registro");
+    } else {
+        await Period.findByIdAndUpdate(req.params.id, {
+            "status": false
+        });
+        res.status(200).send({
+            message: 'Periodo Deshabilitado con Exito'
+        });
+    }
+}
+
+async function disablePeriods(req, res) {
+    await connect();
+
+    await Period.updateMany({ "status": false }, function (err, periods) {
+        if (err) {
+            res.status(401).send("No se han encontrado el registros");
+        } else {
+            res.status(200).send({
+                message: 'Periodos Deshabilitados con Exito'
+            });
         }
     });
-
-    const db = await connect();
-
-    await db.collection("periods").updateOne({
-        _id: ObjectId(req.params.id)
-    }, {
-        $set: dataUpdate
-    });
-    res.send({
-        message: 'Periodo Actualizado con Exito'
-    });
-}
-
-async function deletePeriod(req, res) {
-    const db = await connect();
-    try {
-        await db.collection('periods').updateOne({
-            _id: ObjectId(req.params.id)
-        }, {
-            $set: {
-                "status": false
-            }
-        });
-        res.send({
-            "message": `Periodo Eliminado con Exito`
-        });
-    } catch (err) {
-        res.status(404).send({
-            "message": "Periodo no encontrado",
-        })
-    }
-}
-
-async function deletePeriods(req, res) {
-    const db = await connect();
-    try {
-        await db.collection('periods').updateMany({
-        }, {
-            $set: {
-                "status": false
-            }
-        });;
-        res.send({
-            "message": `Periodos Eliminados con Exito`
-        });
-    } catch (err) {
-        res.status(404).send({
-            "message": "Periodos no Eliminados",
-        })
-    }
 }
 
 // exportamos las funciones definidas
@@ -103,7 +107,7 @@ module.exports = {
     createPeriod,
     showPeriods,
     getPeriod,
-    deletePeriod,
+    disablePeriod,
     updatePeriod,
-    deletePeriods
+    disablePeriods
 }

@@ -1,105 +1,189 @@
-import { connect } from "../config/database";
-import { ObjectId } from "mongodb";
-const Publication = require('../models/publication');
-
+const connect = require('../config/database');
+const Publication = require('../models/Publication');
 
 async function showPublications(req, res) {
-    const db = await connect();
-    const result = await db.collection('publications').find({}).toArray();
-    if (result.length == 0) {
-        res.status(404).send({
-            "message": "No se encontraron registros",
-        });
+    await connect();
+    if (req.query.title) {
+
+        const search = new RegExp(`${req.query.title}`, 'i');
+        await Publication.aggregate([
+            {
+                '$lookup': {
+                    'from': 'products',
+                    'localField': 'id_product',
+                    'foreignField': '_id',
+                    'as': 'product'
+                }
+            }, {
+                '$match': {
+                    'title': search
+                }
+            }
+        ], function (err, publications) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (publications.length > 0) {
+                res.status(200).send(publications);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
+    } else if (req.query.location) {
+        const search = new RegExp(`${req.query.location}`, 'i');
+        await Publication.aggregate([
+            {
+                '$lookup': {
+                    'from': 'products',
+                    'localField': 'id_product',
+                    'foreignField': '_id',
+                    'as': 'product'
+                }
+            }, {
+                '$match': {
+                    'location': search
+                }
+            }
+        ], function (err, publications) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (publications.length > 0) {
+                res.status(200).send(publications);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
+    } else if (req.query.min_price || req.query.max_price) {
+        if (!req.query.min_price) {
+            req.query.min_price = 0
+        }
+        if (!req.query.max_price) {
+            req.query.max_price = Infinity
+        }
+        await Publication.aggregate([
+            {
+                '$match': {
+                    'prices': {
+                        '$gte': Number(req.query.min_price),
+                        '$lte': Number(req.query.max_price)
+                    }
+                }
+            }, {
+                '$lookup': {
+                    'from': 'products',
+                    'localField': 'id_product',
+                    'foreignField': '_id',
+                    'as': 'product'
+                }
+            }
+        ], function (err, publications) {
+            if (err) {
+                res.status(401).send(err);
+            } else {
+                if (err) {
+                    res.status(401).send(err);
+                } else if (publications.length > 0) {
+                    res.status(200).send(publications);
+                } else {
+                    res.status(404).send("No se han encontrado registros");
+                }
+            }
+        })
     } else {
-        res.json(result);
+        await Publication.aggregate([
+            {
+                '$lookup': {
+                    'from': 'products',
+                    'localField': 'id_product',
+                    'foreignField': '_id',
+                    'as': 'product'
+                }
+            }], function (err, publications) {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.status(200).send(publications);
+                }
+            }
+        );
     }
 }
 
+
 async function createPublication(req, res) {
-    const { id_product, amount, prices, location, max_distance, date_finished, status } = req.body;
-    const publication = new Publication(id_product, amount, prices, location, max_distance, date_finished, status);
-    const db = await connect();
-    await db.collection('publications').insertOne(publication);
-    res.send({
-        message: "Publicaciòn Creada con Exito",
+    const publication = new Publication(req.body)
+
+    await connect();
+    await publication.save(function (err) {
+        if (err) {
+            res.status(400).json({
+                success: false,
+                type: err.title,
+                error: err.message
+            });
+        } else {
+            res.status(201).json({
+                success: "Publicacion creada con Exito",
+                Publication: publication
+            });
+        }
     });
 }
 
+
 async function getPublication(req, res) {
-    try {
-        const db = await connect();
-        const result = await db.collection('publications').find({
-            _id: ObjectId(req.params.id)
-        }).toArray();
-        res.json(result);
-    } catch (err) {
-        res.status(404).send({
-            "message": "Publicaciòn no encontrada",
-        })
+    await connect();
+    const publication = await Publication.findById(req.params.id);
+    if (!publication) {
+        res.status(401).send("No se han encontrado registros");
+    } else {
+        res.status(200).send(publication);
     }
 }
 
 async function updatePublication(req, res) {
-    const dataUpdate = {};
-    Object.keys(req.body).forEach(atributo => {
-        if (atributo !== "create_at" && atributo !== "update_at") {
-            if (atributo === "finished_at") {
-                dataUpdate[atributo] = new Date(req.body[atributo].year, req.body[atributo].month, req.body[atributo].day);
-            } else {
-                dataUpdate[atributo] = req.body[atributo];
-            }
+    await connect();
+
+    const publication = await Publication.findById(req.params.id);
+    if (!publication) {
+        res.status(401).send("No se han encontrado el registro");
+    } else {
+        await Publication.findByIdAndUpdate(req.params.id, {
+            $set: req.body
+        });
+        res.status(200).send({
+            message: 'Publicacion Actualizada con Exito'
+        });
+    }
+}
+
+async function disablePublication(req, res) {
+    await connect();
+
+    const publication = await Publication.findById(req.params.id);
+    if (!publication) {
+        res.status(401).send("No se han encontrado el registro");
+    } else {
+        await Publication.findByIdAndUpdate(req.params.id, {
+            "status": false
+        });
+        res.status(200).send({
+            message: 'Publicacion Deshabilitada con Exito'
+        });
+    }
+}
+
+async function disablePublications(req, res) {
+    await connect();
+
+    await Publication.updateMany({ "status": false }, function (err, publications) {
+        if (err) {
+            res.status(401).send("No se han encontrado el registros");
+        } else {
+            res.status(200).send({
+                message: 'Publicaciones Deshabilitadas con Exito'
+            });
         }
     });
-
-    const db = await connect();
-
-    await db.collection("publications").updateOne({
-        _id: ObjectId(req.params.id)
-    }, {
-        $set: dataUpdate
-    });
-    res.send({
-        message: 'Publicación Actualizada con Exito'
-    });
-}
-
-async function deletePublication(req, res) {
-    const db = await connect();
-    try {
-        await db.collection('publications').updateOne({
-            _id: ObjectId(req.params.id)
-        }, {
-            $set: {
-                "status": false
-            }
-        });
-        res.send({
-            "message": `Publicaciòn Eliminada con Exito`
-        });
-    } catch (err) {
-        res.status(404).send({
-            "message": "Publicaciòn no encontrada",
-        })
-    }
-}
-
-async function deletePublications(req, res) {
-    const db = await connect();
-    try {
-        await db.collection('publications').updateMany({
-        }, {
-            $set: {
-                "status": false
-            }
-        });
-        res.send({
-            "message": `Publicaciones Eliminados con Exito`
-        });
-    } catch (err) {
-        res.status(404).send({
-            "message": "Publicaciones no Eliminados",
-        })
-    }
 }
 
 // exportamos las funciones definidas
@@ -107,7 +191,7 @@ module.exports = {
     createPublication,
     showPublications,
     getPublication,
-    deletePublication,
+    disablePublication,
     updatePublication,
-    deletePublications
+    disablePublications
 }

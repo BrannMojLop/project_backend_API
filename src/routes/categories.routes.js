@@ -1,43 +1,33 @@
 import { Router } from "express";
-const { check, validationResult } = require('express-validator');
+const auth = require('./auth.routes');
 
 const router = Router();
 
 // Controllers
-import { createCategory, showCategories, getCategory, deleteCategory, updateCategory, deleteCategories } from "../controllers/categories";
+import { createCategory, showCategories, getCategory, disableCategory, updateCategory, disableCategories } from "../controllers/categories";
 
 /* Routes = {
     (post '/') => createCategory: "Crear una nueva categoria de productos"
     (get '/') => showCategories: "Mostrar todas las categorias"
+    (get '/?title?sector') => showCategories: "Mostrar todas las categorias filtradas"
     (post '/:id') => getCategory: "Mostrar una categoria de productos por ID"
     (put '/:id') => updateCategory: "Editar una categoria de productos por ID"
-    (delete '/:id') => deleteCategory: "Deshabilitar una categoria de producto por ID"
-    (delete '/') => deleteCategories: "Deshabilitar todas las categorias"
+    (delete '/:id') => disableCategory: "Deshabilitar una categoria de producto por ID"
+    (delete '/') => disableCategories: "Deshabilitar todas las categorias"
 }
  */
 
-router.get('/', showCategories);
+router.get('/', auth.requerido, showCategories);
 
-router.get('/:id', getCategory);
+router.get('/:id', auth.requerido, getCategory);
 
-router.post('/', [
-    check('title').isLength({ min: 3 }),
-    check('id_sector').isLength({ min: 3 }),
-    check('status').isBoolean()
-], async function (req, res) {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() })
-    } else {
-        createCategory(req, res);
-    }
-})
+router.post('/', auth.requerido, createCategory);
 
-router.put('/:id', updateCategory);
+router.put('/:id', auth.requerido, updateCategory);
 
-router.delete('/:id', deleteCategory);
+router.delete('/:id', auth.requerido, disableCategory);
 
-router.delete('/', deleteCategories);
+router.delete('/', auth.requerido, disableCategories);
 
 
 export default router;

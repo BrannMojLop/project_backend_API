@@ -1,46 +1,35 @@
 import { Router } from "express";
-const { check, validationResult } = require('express-validator');
+const auth = require('./auth.routes');
 
 const router = Router();
 
 // Controllers
-import { createUser, showUsers, getUser, deleteUser, updateUser, deleteUsers } from "../controllers/users";
+import { createUser, showUsers, getUser, disableUser, updateUser, disableUsers, login } from "../controllers/users";
 
 /* Routes = {
     (post '/') => createUser: "Crear un nuevo usuario"
     (get '/') => showUsers: "Mostrar todos los usuarios existentes"
+    (get '/?firstname?lastname?email?username') => showUsers: "Mostrar todos los usuarios filtrados"
     (post '/:id') => getUser: "Mostrar un usuario por ID"
     (put '/:id') => updateUser: "Editar un usuario por ID"
-    (delete '/:id') => deleteUser: "Deshabilitar un usuario por ID"
-    (delete '/') => deleteUsers: "Deshabilitar todos los usuarios existentes"
+    (delete '/:id') => disableUser: "Deshabilitar un usuario por ID"
+    (delete '/') => disableUsers: "Deshabilitar todos los usuarios existentes"
 }
  */
 
-router.get('/', showUsers);
+router.get('/', auth.requerido, showUsers);
 
-router.get('/:id', getUser);
+router.get('/:id', auth.requerido, getUser);
 
-router.post('/', [
-    check('firstname').isLength({ min: 3 }),
-    check('lastname').isLength({ min: 3 }),
-    check('email').isEmail(),
-    check('username').isLength({ min: 3 }),
-    check('password').isLength({ min: 3 }),
-    check('id_type').isLength({ min: 3 })
-], async function (req, res) {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() })
-    } else {
-        createUser(req, res);
-    }
-})
+router.post('/', auth.opcional, createUser);
 
-router.put('/:id', updateUser);
+router.post('/login', login);
 
-router.delete('/:id', deleteUser);
+router.put('/:id', auth.requerido, updateUser);
 
-router.delete('/', deleteUsers);
+router.delete('/:id', auth.requerido, disableUser);
+
+router.delete('/', auth.requerido, disableUsers);
 
 
 export default router;
