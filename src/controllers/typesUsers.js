@@ -37,7 +37,10 @@ async function showTypesUsers(req, res) {
 async function createTypeUser(req, res) {
     const typeUser = new TypeUser(req.body)
 
-    await connect();
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+
+    if (type === 1) {
         await typeUser.save(function (err) {
             if (err) {
                 res.status(400).json({
@@ -52,6 +55,9 @@ async function createTypeUser(req, res) {
                 });
             }
         });
+    } else {
+        res.status(401).send("Permisos insuficientes")
+    }
 }
 
 
