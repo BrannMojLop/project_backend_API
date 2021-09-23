@@ -6,7 +6,6 @@ export async function connect(res) {
             useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true
         });
         return db;
-
     } catch (e) {
         return res.status(422).send(err)
     }
