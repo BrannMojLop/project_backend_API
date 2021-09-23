@@ -35,6 +35,8 @@ async function createSector(req, res) {
     const sector = new Sector(req.body)
 
     await connect();
+    
+    console.log(req.usuario);
 
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
