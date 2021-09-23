@@ -10,7 +10,7 @@ router.get('/', auth.requerido, showTypesUsers);
 
 router.get('/:id', auth.requerido, getTypeUser);
 
-router.post('/', auth.requerido, createTypeUser);
+router.post('/', createTypeUser);
 
 router.put('/:id', auth.requerido, updateTypeUser);
 
