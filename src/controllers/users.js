@@ -136,7 +136,7 @@ async function updateUser(req, res) {
     if (!user) {
         res.status(204).send("No se han encontrado registros");
     } else {
-        if (type === 1) {
+        if (type === 2) {
             await User.findByIdAndUpdate(req.params.id, {
                 $set: req.body
             });
@@ -144,6 +144,17 @@ async function updateUser(req, res) {
                 message: 'Usuario Actualizado con Exito'
             });
         } else if (user.id == userSearch._id) {
+            if (req.body.password_new) {
+                if (userSearch.validationPassword(req.body.password_current)) {
+                    const passwordNew = userSearch.updatePassword(req.body.password_new);
+                    delete req.body.password;
+                    req.body.salt = passwordNew[0];
+                    req.body.hash = passwordNew[1];
+                } else {
+                    return res.status(400).send("La contraseña actual es incorrecta")
+                }
+            }
+
             await User.findByIdAndUpdate(req.params.id, {
                 $set: req.body
             });
