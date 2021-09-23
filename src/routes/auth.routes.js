@@ -1,5 +1,5 @@
 const jwt = require('express-jwt');
-const secret = require('../config').secret;
+const secret = require('../config/index').secret;
 
 
 // Obtenemos el jwt del header de la petición y verificamos su existencia.
