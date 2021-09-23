@@ -4,25 +4,29 @@ const User = require('../models/User');
 
 
 async function showSectors(req, res) {
-    await connect(res);
-    if (req.query.name) {
-        console.log(req.query.name);
-        await Sector.find({ name: { $regex: req.query.name, $options: "$i" } }, function (err, sectors) {
-            if (err) {
-                res.status(401).send(err);
-            } else if (sectors.length > 0) {
-                res.status(200).send(sectors);
-            } else {
-                res.status(404).send("No se han encontrado registros");
-            }
-        })
-    } else {
-        const sectors = await Sector.find();
-        if (sectors.length === 0) {
-            res.send("No se han encontrado registros");
+    try {
+        await connect(res);
+        if (req.query.name) {
+            console.log(req.query.name);
+            await Sector.find({ name: { $regex: req.query.name, $options: "$i" } }, function (err, sectors) {
+                if (err) {
+                    res.status(401).send(err);
+                } else if (sectors.length > 0) {
+                    res.status(200).send(sectors);
+                } else {
+                    res.status(404).send("No se han encontrado registros");
+                }
+            })
         } else {
-            res.status(200).send(sectors);
+            const sectors = await Sector.find();
+            if (sectors.length === 0) {
+                res.send("No se han encontrado registros");
+            } else {
+                res.status(200).send(sectors);
+            }
         }
+    } catch (err) {
+        res.send(err);
     }
 }
 
