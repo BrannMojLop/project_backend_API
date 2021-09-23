@@ -1,5 +1,5 @@
 {
-  "name": "proyect_backend_API",
+  "name": "project_backend_API",
   "version": "1.0.0",
   "description": "API para sistema de rentas Web",
   "main": "index.js",
@@ -13,9 +13,17 @@
   "license": "ISC",
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
+    "crypto": "^1.0.1",
     "express": "^4.17.1",
-    "express-validator": "^6.12.1",
-    "mongodb": "^4.1.1"
+    "express-jwt": "^6.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^4.1.1",
+    "mongoose": "^5.10.13",
+    "mongoose-unique-validator": "^2.0.3",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.8",

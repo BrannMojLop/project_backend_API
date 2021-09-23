@@ -1,100 +1,149 @@
-import { connect } from "../config/database";
-import { ObjectId } from "mongodb";
-const Period = require('../models/period');
-
+const connect = require('../config/database');
+const Period = require('../models/Period');
+const User = require('../models/User');
 
 async function showPeriods(req, res) {
-    const db = await connect();
-    const result = await db.collection('periods').find({}).toArray();
-    if (result.length == 0) {
-        res.status(404).send({
-            "message": "No se encontraron registros",
-        });
+    await connect();
+    if (req.query.name) {
+        await Period.find({ $regex: req.query.name, $options: "$i" }, function (err, periods) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (periods.length > 0) {
+                res.status(200).send(periods);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
     } else {
-        res.json(result);
+        const periods = await Period.find();
+        if (periods.length === 0) {
+            res.send("No se han encontrado registros");
+        } else {
+            res.status(200).send(periods);
+        }
     }
 }
 
+
 async function createPeriod(req, res) {
-    const { name, days } = req.body;
-    const period = new Period(name, days);
-    const db = await connect();
-    await db.collection('periods').insertOne(period);
-    res.send({
-        message: "Periodo Creado con Exito",
-    });
+    const period = new Period(req.body)
+
+    await connect();
+
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+
+    if (type === 1) {
+        await period.save(function (err) {
+            if (err) {
+                res.status(400).json({
+                    success: false,
+                    type: err.name,
+                    error: err.message
+                });
+            } else {
+                res.status(201).json({
+                    success: "Periodo creado con Exito",
+                    Period: period
+                });
+            }
+        });
+    } else {
+        res.status(401).send("Permisos insuficientes")
+    }
 }
 
+
 async function getPeriod(req, res) {
+    await connect();
     try {
-        const db = await connect();
-        const result = await db.collection('periods').find({
-            _id: ObjectId(req.params.id)
-        }).toArray();
-        res.json(result);
+        const period = await Period.findById(req.params.id);
+        if (!period) {
+            res.status(204).send("No se han encontrado registros");
+        } else {
+            res.status(200).send(period);
+        }
     } catch (err) {
-        res.status(404).send({
-            "message": "Periodo no encontrado",
-        })
+        res.status(400).send(err)
     }
 }
 
 async function updatePeriod(req, res) {
-    const dataUpdate = {};
-    Object.keys(req.body).forEach(atributo => {
-        if (atributo !== "create_at" && atributo !== "update_at") {
-            dataUpdate[atributo] = req.body[atributo];
-        }
-    });
+    await connect();
 
-    const db = await connect();
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
 
-    await db.collection("periods").updateOne({
-        _id: ObjectId(req.params.id)
-    }, {
-        $set: dataUpdate
-    });
-    res.send({
-        message: 'Periodo Actualizado con Exito'
-    });
-}
-
-async function deletePeriod(req, res) {
-    const db = await connect();
-    try {
-        await db.collection('periods').updateOne({
-            _id: ObjectId(req.params.id)
-        }, {
-            $set: {
-                "status": false
+    if (type === 1) {
+        const period = await Period.findById(req.params.id, function (err) {
+            if (err) {
+                res.status(400).json({
+                    error: err.name,
+                    message: err.message
+                })
             }
         });
-        res.send({
-            "message": `Periodo Eliminado con Exito`
-        });
-    } catch (err) {
-        res.status(404).send({
-            "message": "Periodo no encontrado",
-        })
+        if (!period) {
+            res.status(401).send("No se han encontrado el registro");
+        } else {
+            await Period.findByIdAndUpdate(req.params.id, {
+                $set: req.body
+            });
+            res.status(200).send({
+                message: 'Periodo Actualizado con Exito'
+            });
+        }
+    } else {
+        res.status(401).send("Permisos insuficientes")
     }
 }
 
-async function deletePeriods(req, res) {
-    const db = await connect();
-    try {
-        await db.collection('periods').updateMany({
-        }, {
-            $set: {
-                "status": false
+async function disablePeriod(req, res) {
+    await connect();
+
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+    if (type === 1) {
+        const period = await Period.findById(req.params.id, function (err) {
+            if (err) {
+                res.status(400).json({
+                    error: err.name,
+                    message: err.message
+                })
             }
-        });;
-        res.send({
-            "message": `Periodos Eliminados con Exito`
         });
-    } catch (err) {
-        res.status(404).send({
-            "message": "Periodos no Eliminados",
-        })
+        if (!period) {
+            res.status(401).send("No se han encontrado el registro");
+        } else {
+            await Period.findByIdAndUpdate(req.params.id, {
+                "status": false
+            });
+            res.status(200).send({
+                message: 'Periodo Deshabilitado con Exito'
+            });
+        }
+    } else {
+        res.status(401).send("Permisos insuficientes")
+    }
+}
+
+async function disablePeriods(req, res) {
+    await connect();
+
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+    if (type === 1) {
+        await Period.updateMany({ "status": false }, function (err, periods) {
+            if (err) {
+                res.status(401).send("No se han encontrado el registros");
+            } else {
+                res.status(200).send({
+                    message: 'Periodos Deshabilitados con Exito'
+                });
+            }
+        });
+    } else {
+        res.status(401).send("Permisos insuficientes")
     }
 }
 
@@ -103,7 +152,7 @@ module.exports = {
     createPeriod,
     showPeriods,
     getPeriod,
-    deletePeriod,
+    disablePeriod,
     updatePeriod,
-    deletePeriods
+    disablePeriods
 }

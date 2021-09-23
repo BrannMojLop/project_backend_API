@@ -29,9 +29,8 @@ Proyecto final para curso Bedu Santander Desarrollo Web Full-Stack - BackEnd
    - Sectores: Entidad que modela un sector especifico de productos y/o servicios.
    - Categorías: Entidad que modela categorías especificas de productos y/o servicios, las cuales se organizan mediante el sector.
    - Productos: Entidad que modela un producto nuevo.
-   - Servicios (En Desarrollo): Entidad que modela un servicio nuevo.
    - Publicaciones de Renta: Entidad que modela una nueva publicación la cual sera mostrada a los arrendatarios.
-   - Solicitudes de Renta: Entidad que modela una solicitud de renta de un arrendatario a aun arrendador.
+   - Solicitudes de Renta: Entidad que modela una solicitud de renta de un arrendatario a un arrendador.
    - Rentas: Entidad que modela un renta nueva de un producto y/o servicio entre un arrendador y un arrendatario
 
    ### Usuarios:

@@ -1,144 +1,179 @@
-import { connect } from "../config/database";
-import { ObjectId } from "mongodb";
-const Rental_Request = require('../models/rental_request');
+const connect = require('../config/database');
+const RentalRequest = require('../models/RentalRequest');
+const Publication = require('../models/Publication');
+const User = require('../models/User');
+const Product = require('../models/Product');
 
-
-async function showRequests(req, res) {
-    const db = await connect();
-    const result = await db.collection('rental_requests').find({}).toArray();
-    if (result.length == 0) {
-        res.status(404).send({
-            "message": "No se encontraron registros",
-        });
-    } else {
-        res.json(result);
-    }
-}
-
-async function createRequest(req, res) {
-    const { id_lessee, id_publicacion, answer, status } = req.body;
-    const request = new Rental_Request(id_lessee, id_publicacion, answer, status);
-    const db = await connect();
-    await db.collection('rental_requests').insertOne(request);
-    res.send({
-        message: "Solicitud de Renta Creada con Exito",
-    });
-}
-
-async function getRequest(req, res) {
-    try {
-        const db = await connect();
-        const result = await db.collection('rental_requests').find({
-            _id: ObjectId(req.params.id)
-        }).toArray();
-        res.json(result);
-    } catch (err) {
-        res.status(404).send({
-            "message": "Solicitud de Renta no encontrada",
-        })
-    }
-}
-
-async function updateRequest(req, res) {
-
-    try {
-        const dataUpdateRequest = {};
-        const dataUpdatePublication = {};
-        const db = await connect();
-
-        if (req.body.answer === true) {
-            dataUpdateRequest["status"] = false;
-            dataUpdateRequest["answer"] = true;
-
-            const request = await db.collection("rental_requests").findOne({
-                _id: ObjectId(req.params.id)
-            })
-
-            const publication = await db.collection("publications").findOne({
-                _id: ObjectId(request.id_publicacion)
-            })
-
-            if (publication.amount <= 1) {
-                dataUpdatePublication["amount"] = publication.amount - 1;
-                dataUpdatePublication["status"] = false;
+async function showRentalRequests(req, res) {
+    await connect();
+    if (req.query.id_lessee) {
+        await RentalRequest.find({ id_lessee: req.query.id_lessee }, function (err, requests) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (requests.length > 0) {
+                res.status(200).send(requests);
             } else {
-                dataUpdatePublication["amount"] = publication.amount - 1;
+                res.status(404).send("No se han encontrado registros");
             }
-
-            await db.collection("publications").updateOne({
-                _id: publication._id
-            }, {
-                $set: dataUpdatePublication
-            });
-
+        })
+    } else if (req.query.id_lessor) {
+        await RentalRequest.find({ id_lessor: req.query.id_lessor }, function (err, requests) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (requests.length > 0) {
+                res.status(200).send(requests);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
+    } else if (req.query.id_publication) {
+        await RentalRequest.find({ id_publication: req.query.id_publication }, function (err, requests) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (requests.length > 0) {
+                res.status(200).send(requests);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
+    } else {
+        const rentalRequests = await RentalRequest.find();
+        if (rentalRequests.length === 0) {
+            res.send("No se han encontrado registros");
         } else {
-            dataUpdate["status"] = false;
-            dataUpdate["answer"] = false;
+            res.status(200).send(rentalRequests);
         }
-
-        await db.collection("rental_requests").updateOne({
-            _id: ObjectId(req.params.id)
-        }, {
-            $set: dataUpdateRequest
-        });
-
-        res.send({
-            message: 'Solicitud de Renta Actualizada con Exito'
-        });
-    } catch (err) {
-        res.status(404).send({
-            "message": "Solicitud de Renta no actualizada",
-        })
     }
-
-
 }
 
-async function deleteRequest(req, res) {
-    const db = await connect();
+
+async function createRentalRequest(req, res) {
+    const rentalRequest = new RentalRequest(req.body)
+
+    await connect();
+
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+
+    if (type === 3) {
+        const publication = await Publication.findById(rentalRequest.id_publication);
+        if (!publication) {
+            res.status(401).send("No se ha encontrado el registro de la publicacion");
+        } else if (publication.amount == 0) {
+            res.status(401).send("El producto no tiene existencias disponibles para renta");
+        } else if (publication.status == false) {
+            res.status(401).send("La publicacion ya no esta activa");
+        } else {
+            await rentalRequest.save(async function (err) {
+                if (err) {
+                    res.status(400).json({
+                        success: false,
+                        type: err.title,
+                        error: err.message
+                    });
+                } else {
+                    if (publication.amount == 1) {
+                        await Publication.findByIdAndUpdate(rentalRequest.id_publication, {
+                            amount: publication.amount - 1,
+                            status: false
+                        })
+                    } else {
+                        await Publication.findByIdAndUpdate(rentalRequest.id_publication, {
+                            amount: publication.amount - 1
+                        })
+                    }
+                    res.status(200).json({
+                        message: 'Publicacion Actualizada con Exito',
+                        success: "Solicitud de Renta creada con Exito",
+                        RentalRequest: rentalRequest
+                    });
+                }
+            })
+        }
+    } else {
+        res.status(401).send("Permisos insuficientes")
+    }
+}
+
+async function getRentalRequest(req, res) {
+    await connect();
     try {
-        await db.collection('rental_requests').updateOne({
-            _id: ObjectId(req.params.id)
-        }, {
-            $set: {
-                "status": false
+        const rentalRequest = await RentalRequest.findById(req.params.id);
+        if (!rentalRequest) {
+            res.status(204).send("No se han encontrado registros");
+        } else {
+            res.status(200).send(rentalRequest);
+        }
+    } catch (err) {
+        res.status(400).send(err)
+    }
+}
+
+async function updateRentalRequest(req, res) {
+    await connect();
+
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+
+    if (type === 2) {
+        const rentalRequest = await RentalRequest.findById(req.params.id, function (err) {
+            if (err) {
+                res.status(400).json({
+                    error: err.name,
+                    message: err.message
+                })
             }
         });
-        res.send({
-            "message": `Solicitud de Renta Eliminada con Exito`
+        const publication = await Publication.findById(rentalRequest.id_publication, function (err) {
+            if (err) {
+                res.status(400).json({
+                    error: err.name,
+                    message: err.message
+                })
+            }
         });
-    } catch (err) {
-        res.status(404).send({
-            "message": "Solicitud de Renta no encontrada",
-        })
+        const product = await Product.findById(publication.id_product);
+        if (!rentalRequest) {
+            res.status(204).send("No se han encontrado el registro");
+        } else if (product.id_lessor != user.id) {
+            res.status(401).send("Permisos insuficientes");
+        } else {
+            if (req.params.answer == 2) {
+                await RentalRequest.findByIdAndUpdate(req.params.id, {
+                    answer: {
+                        "status": "Confirmada",
+                        "ref": 2
+                    }
+                });
+            } else if (req.params.answer == 3) {
+                await RentalRequest.findByIdAndUpdate(req.params.id, {
+                    answer: {
+                        "status": "Rechazada",
+                        "ref": 3
+                    }
+                });
+            } else if (req.params.answer == 4) {
+                await RentalRequest.findByIdAndUpdate(req.params.id, {
+                    answer: {
+                        "status": "Cancelada",
+                        "ref": 4
+                    }
+                });
+            }
+            res.status(200).send({
+                message: 'Solicitud de Renta Actualizada con Exito'
+            });
+        }
+    } else {
+        res.status(401).send("Permisos insuficientes")
     }
 }
 
-async function deleteRequests(req, res) {
-    const db = await connect();
-    try {
-        await db.collection('rental_requests').updateMany({
-        }, {
-            $set: {
-                "status": false
-            }
-        });
-        res.send({
-            "message": `Solicitudes de Rentas Eliminadas con Exito`
-        });
-    } catch (err) {
-        res.status(404).send({
-            "message": "Solicitudes de Rentas no Eliminadas",
-        })
-    }
-}
 
 // exportamos las funciones definidas
 module.exports = {
-    createRequest,
-    showRequests,
-    getRequest,
-    deleteRequest,
-    updateRequest,
-    deleteRequests
+    createRentalRequest,
+    showRentalRequests,
+    getRentalRequest,
+    updateRentalRequest
 }

@@ -1,42 +1,22 @@
 import { Router } from "express";
-const { check, validationResult } = require('express-validator');
+const auth = require('./auth.routes');
 
 const router = Router();
 
 // Controllers
-import { createTypeUser, showTypeUsers, getTypeUser, deleteTypeUser, updateTypeUser, deleteTypesUsers } from "../controllers/typeUser";
+import { createTypeUser, showTypesUsers, getTypeUser, disableTypeUser, updateTypeUser, disableTypesUsers } from "../controllers/typesUsers";
 
-/* Routes = {
-    (post '/') => createTypeUser: "Crear un nuevo tipo de usuario"
-    (get '/') => showTypeUsers: "Mostrar todos los tipos de usuario existentes"
-    (post '/:id') => getTypeUser: "Mostrar un tipo de usuario por ID"
-    (put '/:id') => updateTypeUser: "Editar un tipo de usuario por ID"
-    (delete '/:id') => deleteTypeUser: "Deshabilitar un tipo de usuario por ID"
-    (delete '/') => deleteTypesUsers: "Deshabilitar todos los tipos de usuario existentes"
-}
- */
+router.get('/', auth.requerido, showTypesUsers);
 
-router.get('/', showTypeUsers);
+router.get('/:id', auth.requerido, getTypeUser);
 
-router.get('/:id', getTypeUser);
+router.post('/', auth.requerido, createTypeUser);
 
-router.post('/', [
-    check('name').isLength({ min: 3 }),
-    check('type').isNumeric()
-], async function (req, res) {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() })
-    } else {
-        createTypeUser(req, res);
-    }
-})
+router.put('/:id', auth.requerido, updateTypeUser);
 
-router.put('/:id', updateTypeUser);
+router.delete('/:id', auth.requerido, disableTypeUser);
 
-router.delete('/:id', deleteTypeUser);
-
-router.delete('/', deleteTypesUsers);
+router.delete('/', auth.requerido, disableTypesUsers);
 
 
 export default router;

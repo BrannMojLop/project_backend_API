@@ -1,42 +1,22 @@
 import { Router } from "express";
-const { check, validationResult } = require('express-validator');
+const auth = require('./auth.routes');
 
 const router = Router();
 
 // Controllers
-import { createSector, showSectors, getSector, deleteSector, deleteSectors, updateSector } from "../controllers/sectors";
-
-/* Routes = {
-    (post '/') => createSector: "Crear un nuevo sector de productos"
-    (get '/') => showSectors: "Mostrar todos los sectores"
-    (post '/:id') => getSector: "Mostrar un sector de productos por ID"
-    (put '/:id') => updateSector: "Editar un sector de productos por ID"
-    (delete '/:id') => deleteSector: "Deshabilitar un sector de producto por ID"
-    (delete '/') => deleteSectors: "Deshabilitar todos los sectores"
-}
- */
+import { createSector, showSectors, getSector, updateSector, disableSector, disableSectors } from "../controllers/sectors";
 
 router.get('/', showSectors);
 
 router.get('/:id', getSector);
 
-router.post('/', [
-    check('title').isLength({ min: 3 }),
-    check('status').isBoolean()
-], async function (req, res) {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() })
-    } else {
-        createSector(req, res);
-    }
-})
+router.post('/', auth.requerido, createSector);
 
-router.put('/:id', updateSector);
+router.put('/:id', auth.requerido, updateSector);
 
-router.delete('/:id', deleteSector);
+router.delete('/:id', auth.requerido, disableSector);
 
-router.delete('/', deleteSectors);
+router.delete('/', auth.requerido, disableSectors);
 
 
 export default router;
