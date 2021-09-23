@@ -4,7 +4,7 @@ const User = require('../models/User');
 
 
 async function showSectors(req, res) {
-    await connect();
+    await connect(res);
     if (req.query.name) {
         console.log(req.query.name);
         await Sector.find({ name: { $regex: req.query.name, $options: "$i" } }, function (err, sectors) {
