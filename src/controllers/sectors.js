@@ -7,7 +7,6 @@ async function showSectors(req, res) {
     try {
         await connect(res);
         if (req.query.name) {
-            console.log(req.query.name);
             await Sector.find({ name: { $regex: req.query.name, $options: "$i" } }, function (err, sectors) {
                 if (err) {
                     res.status(401).send(err);
@@ -35,8 +34,6 @@ async function createSector(req, res) {
     const sector = new Sector(req.body)
 
     await connect();
-    
-    console.log(req.usuario);
 
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
