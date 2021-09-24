@@ -6,27 +6,71 @@ const User = require('../models/User');
 async function showSectors(req, res) {
     try {
         await connect(res);
+
+        if (req.body.require || req.body.limit) {
+            if (!req.body.limit) {
+                req.body.limit = Infinity;
+            } else if (!req.body.require) {
+                req.body.require = {
+                    _id: 1,
+                    name: 1,
+                    description: 1,
+                    createdAt: 1,
+                    status: 1,
+                    updatedAt: 1
+                }
+            }
+        } else {
+            req.body.require = {
+                _id: 1,
+                name: 1,
+                description: 1,
+                createdAt: 1,
+                status: 1,
+                updatedAt: 1
+            }
+            req.body.limit = Infinity;
+        }
+
         if (req.query.name) {
-            console.log(req.query.name);
-            await Sector.find({ name: { $regex: req.query.name, $options: "$i" } }, function (err, sectors) {
+            await Sector.aggregate([
+                {
+                    '$project': req.body.require
+                },
+                {
+                    '$limit': req.body.limit
+                }, {
+                    '$match': { "name": { $regex: req.query.name, $options: "$i" } }
+                }
+            ], function (err, sectors) {
                 if (err) {
                     res.status(401).send(err);
                 } else if (sectors.length > 0) {
                     res.status(200).send(sectors);
                 } else {
-                    res.status(404).send("No se han encontrado registros");
+                    res.status(204).send("No se han encontrado registros");
                 }
             })
         } else {
-            const sectors = await Sector.find();
-            if (sectors.length === 0) {
-                res.send("No se han encontrado registros");
-            } else {
-                res.status(200).send(sectors);
-            }
+            await Sector.aggregate([
+                {
+                    '$project': req.body.require
+                },
+                {
+                    '$limit': req.body.limit
+                }
+            ], function (err, sectors) {
+                if (err) {
+                    res.status(401).send(err);
+                } else if (sectors.length > 0) {
+                    res.status(200).send(sectors);
+                } else {
+                    res.status(204).send("No se han encontrado registros");
+                }
+            })
         }
     } catch (err) {
-        res.send(err);
+        res.send(err)
     }
 }
 

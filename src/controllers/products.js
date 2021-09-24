@@ -5,14 +5,53 @@ const User = require('../models/User');
 
 async function showProducts(req, res) {
     await connect();
+
+    if (req.body.require || req.body.limit) {
+        if (!req.body.limit) {
+            req.body.limit = Infinity;
+        } else if (!req.body.require) {
+            req.body.require = {
+                name: 1,
+                image: 1,
+                description: 1,
+                id_category: 1,
+                id_lessor: 1,
+                createdAt: 1,
+                status: 1,
+                updatedAt: 1
+            }
+        }
+    } else {
+        req.body.require = {
+            name: 1,
+            image: 1,
+            description: 1,
+            id_category: 1,
+            id_lessor: 1,
+            createdAt: 1,
+            status: 1,
+            updatedAt: 1
+        }
+        req.body.limit = Infinity;
+    }
+
     if (req.query.name) {
-        await Product.find({ name: { $regex: req.query.name, $options: "$i" } }, function (err, products) {
+        await Product.aggregate([
+            {
+                '$project': req.body.require
+            },
+            {
+                '$limit': req.body.limit
+            }, {
+                '$match': { "name": { $regex: req.query.name, $options: "$i" } }
+            }
+        ], function (err, products) {
             if (err) {
                 res.status(401).send(err);
             } else if (products.length > 0) {
                 res.status(200).send(products);
             } else {
-                res.status(404).send("No se han encontrado registros");
+                res.status(204).send("No se han encontrado registros");
             }
         })
     } else if (req.query.id_lessor) {
@@ -36,12 +75,23 @@ async function showProducts(req, res) {
             }
         })
     } else {
-        const products = await Product.find();
-        if (products.length === 0) {
-            res.send("No se han encontrado registros");
-        } else {
-            res.status(200).send(products);
-        }
+        await Product.aggregate([
+            {
+                '$project': req.body.require
+            },
+            {
+                '$limit': req.body.limit
+            }
+        ], function (err, products) {
+            console.log(req.body.require);
+            if (err) {
+                res.status(401).send(err);
+            } else if (products.length > 0) {
+                res.status(200).send(products);
+            } else {
+                res.status(204).send("No se han encontrado registros");
+            }
+        })
     }
 }
 

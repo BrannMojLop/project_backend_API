@@ -6,57 +6,111 @@ const passport = require('passport');
 async function showUsers(req, res) {
     await connect();
 
+    if (req.body.require || req.body.limit) {
+        if (!req.body.limit) {
+            req.body.limit = Infinity;
+        } else if (!req.body.require) {
+            req.body.require = {
+                firstname: 1,
+                lastname: 1,
+                email: 1,
+                username: 1,
+                status: 1,
+                createdAt: 1,
+                updatedAt: 1
+            }
+        }
+    } else {
+        req.body.require = {
+            firstname: 1,
+            lastname: 1,
+            email: 1,
+            username: 1,
+            status: 1,
+            createdAt: 1,
+            updatedAt: 1
+        }
+        req.body.limit = Infinity;
+    }
+
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
 
     if (type === 1) {
         if (req.query.firstname) {
-            await User.find({ firstname: { $regex: req.query.firstname, $options: "$i" } }, function (err, users) {
+            await User.aggregate([
+                {
+                    '$project': req.body.require
+                },
+                {
+                    '$limit': req.body.limit
+                }, {
+                    '$match': { "firstname": { $regex: req.query.firstname, $options: "$i" } }
+                }
+            ], function (err, users) {
                 if (err) {
                     res.status(401).send(err);
                 } else if (users.length > 0) {
                     res.status(200).send(users);
                 } else {
-                    res.status(404).send("No se han encontrado registros");
+                    res.status(204).send("No se han encontrado registros");
                 }
             })
         } else if (req.query.lastname) {
-            await User.find({ lastname: { $regex: req.query.lastname, $options: "$i" } }, function (err, users) {
+            await User.aggregate([
+                {
+                    '$project': req.body.require
+                },
+                {
+                    '$limit': req.body.limit
+                }, {
+                    '$match': { "lastname": { $regex: req.query.lastname, $options: "$i" } }
+                }
+            ], function (err, users) {
                 if (err) {
                     res.status(401).send(err);
                 } else if (users.length > 0) {
                     res.status(200).send(users);
                 } else {
-                    res.status(404).send("No se han encontrado registros");
+                    res.status(204).send("No se han encontrado registros");
                 }
             })
-        } else if (req.query.email) {
-            await User.find({ email: { $regex: req.query.email, $options: "$i" } }, function (err, users) {
-                if (err) {
-                    res.status(401).send(err);
-                } else if (users.length > 0) {
-                    res.status(200).send(users);
-                } else {
-                    res.status(404).send("No se han encontrado registros");
+        } else if (req.query.username) {
+            await User.aggregate([
+                {
+                    '$project': req.body.require
+                },
+                {
+                    '$limit': req.body.limit
+                }, {
+                    '$match': { "username": { $regex: req.query.username, $options: "$i" } }
                 }
-            })
-        } else if (req.query.email) {
-            await User.find({ email: { $regex: req.query.email, $options: "$i" } }, function (err, users) {
+            ], function (err, users) {
                 if (err) {
                     res.status(401).send(err);
                 } else if (users.length > 0) {
                     res.status(200).send(users);
                 } else {
-                    res.status(404).send("No se han encontrado registros");
+                    res.status(204).send("No se han encontrado registros");
                 }
             })
         } else {
-            const users = await User.find();
-            if (users.length === 0) {
-                res.send("No se han encontrado registros");
-            } else {
-                res.status(200).send(users);
-            }
+            await User.aggregate([
+                {
+                    '$project': req.body.require
+                },
+                {
+                    '$limit': req.body.limit
+                }
+            ], function (err, users) {
+                if (err) {
+                    res.status(401).send(err);
+                } else if (users.length > 0) {
+                    res.status(200).send(users);
+                } else {
+                    res.status(204).send("No se han encontrado registros");
+                }
+            })
         }
     } else {
         res.status(401).send("Permisos insuficientes")

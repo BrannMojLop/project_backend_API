@@ -4,26 +4,70 @@ const User = require('../models/User');
 
 async function showPeriods(req, res) {
     await connect();
+
+    if (req.body.require || req.body.limit) {
+        if (!req.body.limit) {
+            req.body.limit = Infinity;
+        } else if (!req.body.require) {
+            req.body.require = {
+                _id: 1,
+                name: 1,
+                days: 1,
+                createdAt: 1,
+                status: 1,
+                updatedAt: 1
+            }
+        }
+    } else {
+        req.body.require = {
+            _id: 1,
+            name: 1,
+            days: 1,
+            createdAt: 1,
+            status: 1,
+            updatedAt: 1
+        }
+        req.body.limit = Infinity;
+    }
+
     if (req.query.name) {
-        await Period.find({ $regex: req.query.name, $options: "$i" }, function (err, periods) {
+        await Period.aggregate([
+            {
+                '$project': req.body.require
+            },
+            {
+                '$limit': req.body.limit
+            }, {
+                '$match': { "name": { $regex: req.query.name, $options: "$i" } }
+            }
+        ], function (err, periods) {
             if (err) {
                 res.status(401).send(err);
             } else if (periods.length > 0) {
                 res.status(200).send(periods);
             } else {
-                res.status(404).send("No se han encontrado registros");
+                res.status(204).send("No se han encontrado registros");
             }
         })
     } else {
-        const periods = await Period.find();
-        if (periods.length === 0) {
-            res.send("No se han encontrado registros");
-        } else {
-            res.status(200).send(periods);
-        }
+        await Period.aggregate([
+            {
+                '$project': req.body.require
+            },
+            {
+                '$limit': req.body.limit
+            }
+        ], function (err, periods) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (periods.length > 0) {
+                res.status(200).send(periods);
+            } else {
+                res.status(204).send("No se han encontrado registros");
+            }
+        })
     }
 }
-
 
 async function createPeriod(req, res) {
     const period = new Period(req.body)
