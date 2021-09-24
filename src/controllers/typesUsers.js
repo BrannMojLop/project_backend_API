@@ -71,8 +71,6 @@ async function showTypesUsers(req, res) {
 async function createTypeUser(req, res) {
     const typeUser = new TypeUser(req.body)
 
-    await connect();
-
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
 
