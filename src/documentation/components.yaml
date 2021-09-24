@@ -389,7 +389,7 @@ components:
           example: Cast to ObjectId failed for value
 
   requestBodies:
-    Sector:
+    postSector:
       description: Un objeto JSON que contiene la informacion del Sector
       required: true
       content:
@@ -407,6 +407,24 @@ components:
                required: true
                description: Descripcion del tipo de Sector
                example: Herramientas en general
+    configRequest:
+      description: Un objeto JSON que contiene la configuracion de respuesta
+      required: false
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+             require:
+               type: object
+               required: false
+               description: Objeto con los campos que se quier obetener
+               example: { name: 1, description: 1, _id: 0}
+             limit:
+               type: number
+               required: false
+               description: Nuemero de docuemtos que desa obtener
+               example: 2
 
   securitySchemes:
     bearerAuth:  

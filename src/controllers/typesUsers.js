@@ -6,27 +6,61 @@ const User = require('../models/User');
 async function showTypesUsers(req, res) {
     await connect();
 
+    if (req.body.require || req.body.limit) {
+        if (!req.body.limit) {
+            req.body.limit = Infinity;
+        } else if (!req.body.require) {
+            req.body.require = {
+                _id: 1,
+                name: 1,
+                type: 1,
+                createdAt: 1,
+                status: 1,
+                updatedAt: 1
+            }
+        }
+    }
+
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
 
     if (type === 1) {
         if (req.query.name) {
-            await TypeUser.find({ name: { $regex: req.query.name, $options: "$i" } }, function (err, typesUsers) {
+            await TypeUser.aggregate([
+                {
+                    '$project': req.body.require
+                },
+                {
+                    '$limit': req.body.limit
+                }, {
+                    '$match': { "name": { $regex: req.query.name, $options: "$i" } }
+                }
+            ], function (err, typesUsers) {
                 if (err) {
                     res.status(401).send(err);
                 } else if (typesUsers.length > 0) {
                     res.status(200).send(typesUsers);
                 } else {
-                    res.status(404).send("No se han encontrado registros");
+                    res.status(204).send("No se han encontrado registros");
                 }
             })
         } else {
-            const typesUsers = await TypeUser.find();
-            if (typesUsers.length === 0) {
-                res.send("No se han encontrado registros");
-            } else {
-                res.status(200).send(typesUsers);
-            }
+            await TypeUser.aggregate([
+                {
+                    '$project': req.body.require
+                },
+                {
+                    '$limit': req.body.limit
+                }
+            ], function (err, typesUsers) {
+                if (err) {
+                    res.status(401).send(err);
+                } else if (typesUsers.length > 0) {
+                    res.status(200).send(typesUsers);
+                } else {
+                    res.status(204).send("No se han encontrado registros");
+                }
+            })
         }
     } else {
         res.status(401).send("Permisos insuficientes")

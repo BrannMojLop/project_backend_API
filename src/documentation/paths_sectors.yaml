@@ -6,7 +6,7 @@ paths:
       summary: Crear un nuevo sector de productos
       operationId: addSector
       requestBody: 
-        $ref: '#/components/requestBodies/Sector'
+        $ref: '#/components/requestBodies/postSector'
       responses:
         '400':
           description: Invalid input
@@ -34,6 +34,8 @@ paths:
         - Sectores
       summary: Obtener todos los sectores por nombre
       operationId: getSectors
+      requestBody: 
+        $ref: '#/components/requestBodies/configRequest'
       parameters:
         - in: query
           name: name

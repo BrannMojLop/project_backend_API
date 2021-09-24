@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const connect = require('../config/database');
 const Category = require('../models/Category');
 const User = require('../models/User');
@@ -6,8 +8,45 @@ const User = require('../models/User');
 
 async function showCategories(req, res) {
     await connect();
+
+    if (req.body.require || req.body.limit) {
+        if (!req.body.limit) {
+            req.body.limit = Infinity;
+        } else if (!req.body.require) {
+            req.body.require = {
+                _id: 1,
+                name: 1,
+                id_sector: 1,
+                description: 1,
+                createdAt: 1,
+                status: 1,
+                updatedAt: 1
+            }
+        }
+    } else {
+        req.body.require = {
+            _id: 1,
+            name: 1,
+            id_sector: 1,
+            description: 1,
+            createdAt: 1,
+            status: 1,
+            updatedAt: 1
+        }
+        req.body.limit = Infinity;
+    }
+
     if (req.query.name) {
-        await Category.find({ name: req.query.name }, function (err, categories) {
+        await Category.aggregate([
+            {
+                '$project': req.body.require
+            },
+            {
+                '$limit': req.body.limit
+            }, {
+                '$match': { "name": { $regex: req.query.name, $options: "$i" } }
+            }
+        ], function (err, categories) {
             if (err) {
                 res.status(401).send(err);
             } else if (categories.length > 0) {
@@ -16,23 +55,23 @@ async function showCategories(req, res) {
                 res.status(404).send("No se han encontrado registros");
             }
         })
-    } else if (req.query.id_sector) {
-        await Category.find({ id_sector: req.query.id_sector }, function (err, requests) {
+    } else {
+        await Category.aggregate([
+            {
+                '$project': req.body.require
+            },
+            {
+                '$limit': req.body.limit
+            }
+        ], function (err, categories) {
             if (err) {
                 res.status(401).send(err);
-            } else if (requests.length > 0) {
-                res.status(200).send(requests);
+            } else if (categories.length > 0) {
+                res.status(200).send(categories);
             } else {
                 res.status(404).send("No se han encontrado registros");
             }
         })
-    } else {
-        const categories = await Category.find();
-        if (categories.length === 0) {
-            res.send("No se han encontrado registros");
-        } else {
-            res.status(200).send(categories);
-        }
     }
 }
 
