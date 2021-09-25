@@ -18,9 +18,13 @@ const options = {
         basePath: './src/documentation',
         servers: [
             {
-                url: "http://localhost:4000",
+                url: "http://localhost:4001",
                 description: 'Servidor de Desarrollo'
             },
+            {
+                url: "https://income-system.herokuapp.com/",
+                description: 'Servidor de Producciòn'
+            }
         ],
     },
     apis: ["./src/documentation/*.yaml"]

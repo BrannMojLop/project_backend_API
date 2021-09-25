@@ -17,7 +17,7 @@ import Rents from '../routes/rents.routes';
 import SwaggerDocs from '../config/swagger'
 
 // Settings
-server.set('port', process.env.PORT || 4000);
+server.set('port', process.env.PORT || 4001);
 
 // Middleware
 server.use(express.json());

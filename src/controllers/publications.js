@@ -1,5 +1,7 @@
 const connect = require('../config/database');
 const Publication = require('../models/Publication');
+const User = require('../models/User');
+const Product = require('../models/Product');
 
 async function showPublications(req, res) {
     await connect();
@@ -113,77 +115,130 @@ async function createPublication(req, res) {
     const publication = new Publication(req.body)
 
     await connect();
-    await publication.save(function (err) {
-        if (err) {
-            res.status(400).json({
-                success: false,
-                type: err.title,
-                error: err.message
-            });
-        } else {
-            res.status(201).json({
-                success: "Publicacion creada con Exito",
-                Publication: publication
-            });
-        }
-    });
+
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+
+    if (type === 2) {
+        await publication.save(function (err) {
+            if (err) {
+                res.status(400).json({
+                    success: false,
+                    type: err.title,
+                    error: err.message
+                });
+            } else {
+                res.status(201).json({
+                    success: "Publicacion creada con Exito",
+                    Publication: publication
+                });
+            }
+        });
+    } else {
+        res.status(401).send("Permisos insuficientes")
+    }
 }
 
 
 async function getPublication(req, res) {
     await connect();
-    const publication = await Publication.findById(req.params.id);
-    if (!publication) {
-        res.status(401).send("No se han encontrado registros");
-    } else {
-        res.status(200).send(publication);
+    try {
+        const publication = await Publication.findById(req.params.id);
+        if (!publication) {
+            res.status(204).send("No se han encontrado registros");
+        } else {
+            res.status(200).send(publication);
+        }
+    } catch (err) {
+        res.status(400).send(err)
     }
 }
 
 async function updatePublication(req, res) {
     await connect();
 
-    const publication = await Publication.findById(req.params.id);
-    if (!publication) {
-        res.status(401).send("No se han encontrado el registro");
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+
+    if (type === 2) {
+        const publication = await Publication.findById(req.params.id, function (err) {
+            if (err) {
+                res.status(400).json({
+                    error: err.name,
+                    message: err.message
+                })
+            }
+        });
+        const product = await Product.findById(publication.id_product);
+        if (!publication) {
+            res.status(204).send("No se han encontrado el registro");
+        } else if (product.id_lessor != user.id) {
+            res.status(401).send("Permisos insuficientes");
+        } else {
+            await Publication.findByIdAndUpdate(req.params.id, {
+                $set: req.body
+            });
+            res.status(200).send({
+                message: 'Publicacion Actualizada con Exito'
+            });
+        }
     } else {
-        await Publication.findByIdAndUpdate(req.params.id, {
-            $set: req.body
-        });
-        res.status(200).send({
-            message: 'Publicacion Actualizada con Exito'
-        });
+        res.status(401).send("Permisos insuficientes")
     }
 }
 
 async function disablePublication(req, res) {
     await connect();
 
-    const publication = await Publication.findById(req.params.id);
-    if (!publication) {
-        res.status(401).send("No se han encontrado el registro");
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+
+    if (type === 2) {
+        const publication = await Publication.findById(req.params.id, function (err) {
+            if (err) {
+                res.status(400).json({
+                    error: err.name,
+                    message: err.message
+                })
+            }
+        });
+        const product = await Product.findById(publication.id_product);
+        if (!publication) {
+            res.status(204).send("No se han encontrado el registro");
+        } else if (product.id_lessor != user.id) {
+            res.status(401).send("Permisos insuficientes");
+        } else {
+            await Publication.findByIdAndUpdate(req.params.id, {
+                "status": false
+            });
+            res.status(200).send({
+                message: 'Publicacion Deshabilitada con Exito'
+            });
+        }
     } else {
-        await Publication.findByIdAndUpdate(req.params.id, {
-            "status": false
-        });
-        res.status(200).send({
-            message: 'Publicacion Deshabilitada con Exito'
-        });
+        res.status(401).send("Permisos insuficientes")
     }
 }
 
 async function disablePublications(req, res) {
     await connect();
 
-    await Publication.updateMany({ "status": false }, function (err, publications) {
-        if (err) {
-            res.status(401).send("No se han encontrado el registros");
-        } else {
-            res.status(200).send({
-                message: 'Publicaciones Deshabilitadas con Exito'
-            });
-        }
-    });
+    const user = await User.findById(req.usuario.id);
+    const type = await user.typeUser(user.id_type);
+
+    if (type === 1) {
+        await Publication.updateMany({ "status": false }, function (err, publications) {
+            if (err) {
+                res.status(401).send("No se han encontrado el registros");
+            } else {
+                res.status(200).send({
+                    message: 'Publicaciones Deshabilitadas con Exito'
+                });
+            }
+        });
+    } else {
+        res.status(401).send("Permisos insuficientes")
+    }
 }
 
 // exportamos las funciones definidas
