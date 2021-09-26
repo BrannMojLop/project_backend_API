@@ -387,6 +387,118 @@ components:
           description: Describe el error obtenido
           type: string
           example: Cast to ObjectId failed for value
+    CreateCategory:
+      type: object
+      properties:
+        success: 
+          type: boolean
+          example: false
+        type:
+          description: Indica el tipo de error
+          type: String
+          example: ValidationError
+        error:
+          type: string
+          description: Describe el error obtenido
+          example: La categoria ya existe
+    CreatePeriod:
+      type: object
+      properties:
+        success: 
+          type: boolean
+          example: false
+        type:
+          description: Indica el tipo de error
+          type: String
+          example: ValidationError
+        error:
+          type: string
+          description: Describe el error obtenido
+          example: El periodo ya existe
+    CreateProduct:
+      type: object
+      properties:
+        success: 
+          type: boolean
+          example: false
+        type:
+          description: Indica el tipo de error
+          type: String
+          example: ValidationError
+        error:
+          type: string
+          description: Describe el error obtenido
+          example: El producto ya existe
+    CreatePublication:
+      type: object
+      properties:
+        success: 
+          type: boolean
+          example: false
+        type:
+          description: Indica el tipo de error
+          type: String
+          example: ValidationError
+        error:
+          type: string
+          description: Describe el error obtenido
+          example: La publicacion ya existe
+    CreateRentalRequest:
+      type: object
+      properties:
+        success: 
+          type: boolean
+          example: false
+        type:
+          description: Indica el tipo de error
+          type: String
+          example: ValidationError
+        error:
+          type: string
+          description: Describe el error obtenido
+          example: La Solicitud ya existe
+    CreateRents:
+      type: object
+      properties:
+        success: 
+          type: boolean
+          example: false
+        type:
+          description: Indica el tipo de error
+          type: String
+          example: ValidationError
+        error:
+          type: string
+          description: Describe el error obtenido
+          example: La Renta ya existe
+    CreateUser:
+      type: object
+      properties:
+        success: 
+          type: boolean
+          example: false
+        type:
+          description: Indica el tipo de error
+          type: String
+          example: ValidationError
+        error:
+          type: string
+          description: Describe el error obtenido
+          example: El usuario ya existe
+    CreateTypeUser:
+      type: object
+      properties:
+        success: 
+          type: boolean
+          example: false
+        type:
+          description: Indica el tipo de error
+          type: String
+          example: ValidationError
+        error:
+          type: string
+          description: Describe el error obtenido
+          example: El tipo de usuario ya existe
 
   requestBodies:
     postSector:
@@ -418,13 +530,185 @@ components:
              require:
                type: object
                required: false
-               description: Objeto con los campos que se quier obetener
+               description: Objeto con los campos que se quiere obtener
                example: { name: 1, description: 1, _id: 0}
              limit:
                type: number
                required: false
-               description: Nuemero de docuemtos que desa obtener
+               description: Número de docuemtos que desa obtener
                example: 2
+    postCategory:
+      description: Un objeto JSON que contiene la información de la categoria
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+             name:
+               type: string
+               required: true
+               description: Nombre de la Categría de Productos
+               example: Hogar
+             description:
+               type: string
+               required: true
+               description: Descripcion del tipo de Sector
+               example: Herramientas en general
+    postPeriod:
+      description: Un objeto JSON que contiene la información del periodo
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+             name:
+               type: string
+               required: true
+               description: Nombre del Periodo
+               example: Quincenal
+             days:
+               type: number
+               required: true
+               description: Número de días del periodo
+               example: 15
+    postProduct:
+      description: Un objeto JSON que contiene la información del producto
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+             name:
+               type: string
+               required: true
+               description: Nombre del Producto
+               example: Motocierra Semi-nueva
+             description:
+               type: string
+               required: true
+               description: Descripcion del producto
+               example: Motocierra en buen estado, funcionando al 100
+            image:
+              type: string
+              required: true
+              description: Imagen del producto
+              example: Sin imagen
+            id_category:
+              type: string
+              required: true
+              description: ID de la categoria
+              example: id_category
+            id_lessor:
+              type: string
+              required: true
+              description: ID de arrendatario
+              example: id_lessor
+    postPublication:
+      description: Un objeto JSON que contiene la información del producto
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+             title:
+               type: String
+               required: true
+               description: Título de la publicación
+               example: Moto en Venta, accesible en la CDMX
+             id_product:
+               type: String
+               required: true
+               description: ID del Producto a rentar
+               example: id_producto
+            prices:
+              type: Array
+              required: true
+              description: Precios de la renta
+              example: [ 200, 500 ]
+            periods:
+              type: Array
+              required: true
+              description: Listado de peridos por renta
+              example: [ 15, 30 ]
+    postRentalRequest:
+      description: Un objeto JSON que contiene la información de la Solicitud de Renta
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              contract:
+                type: Object
+                description: Contiene el contrato elegido por el Arrendador, periodo y precio
+                example: { price: 350, days: 15}
+              answer:
+                type: Object,
+                description: Contiene el detalle de estatus de la Solicitud
+                example: { "status": "En Espera", "ref": 1 }
+    postRents:
+      description: Un objeto JSON que contiene la información de una Renta
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              payment:
+                type: boolean
+                description: Indica el estatus del pago de la renta
+                example: true
+              start_date:
+                type: Object,
+                description: Fecha de inicio del contrato de renta
+                example: 2021-09-13T19:04:04.310Z
+    postUsers:
+      description: Un objeto JSON que contiene la información de un Usuario
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              firstname:
+                type: string
+                description: Nombre del Usuario
+                example: Juan
+              lastname:
+                type: string
+                description: Apellidos del Usuario
+                example: Valdez Suarez
+              email:
+                type: string
+                description: Email del Usuario
+                example: juan@juan.com
+              username:
+                type: string
+                description: Username del Usuario
+    postTypeUser:
+      description: Un objeto JSON que contiene la información de un tipo de Usuario
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Nombre del Tipo de usuario
+                example: Administrador
+              type:
+                type: Number
+                description: Numero identificador de cada tipo de usuario
+                example: 1
+              status:
+                type: boolean,
+                description: Indica si el Tipo de Usuario esta activo o desactivado
+                example: true
 
   securitySchemes:
     bearerAuth:  
