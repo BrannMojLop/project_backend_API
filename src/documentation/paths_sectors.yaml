@@ -1061,3 +1061,609 @@ paths:
                     $ref: '#/components/schemas/RentalRequest'
         '400':
           description: Invalid request
+    
+  /rental-requests{id}:
+    get:
+      tags: 
+        - Solicitudes de Renta
+      summary: Obtener una solicitud por ID
+      operationId: getRentalRequests
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Identificador unico de cada solicitud
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/RentalRequest'
+        '400':
+          description: Invalid request
+    
+    put:
+      tags: 
+        - Solicitudes de Renta
+      summary: Editar una solicitud por ID
+      operationId: putRentalRequest
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Identificador unico de cada sector
+      requestBody: 
+        $ref: '#/components/requestBodies/RentalRequest'
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: Solicitud Actualizado con Exito
+        '400':
+          description: Invalid input
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemasError/DisableSector'
+        '401':
+          description: Permission Denied
+      security:
+        - bearerAuth: []
+
+  /rents:
+    post:
+      tags: 
+        - Rentas
+      summary: Crear una nueva renta de productos
+      operationId: addRents
+      requestBody: 
+        $ref: '#/components/requestBodies/postRents'
+      responses:
+        '400':
+          description: Invalid input
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemasError/CreateRents'
+        '201':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Rent'
+        '401':
+          description: Permission Denied
+      security:
+        - bearerAuth: []
+    
+    get:
+      tags: 
+        - Rentas
+      summary: Obtener todas las rentas por nombre
+      operationId: getRents
+      requestBody: 
+        $ref: '#/components/requestBodies/configRequest'
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+            description: Nombre de la renta o rentas que contengan cierta relacion con en texto ingresado
+            example: name
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Rent'
+        '400':
+          description: Invalid request
+    
+  /rents{id}:
+    get:
+      tags: 
+        - Rentas
+      summary: Obtener una renta por ID
+      operationId: getRents
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Identificador unico de cada Renta
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Rent'
+        '400':
+          description: Invalid request
+    
+    put:
+      tags: 
+        - Rentas
+      summary: Editar una renta por ID
+      operationId: putRent
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Identificador unico de cada renta
+      requestBody: 
+        $ref: '#/components/requestBodies/Rents'
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: Renta Actualizada con Exito
+        '400':
+          description: Invalid input
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemasError/DisableSector'
+        '401':
+          description: Permission Denied
+      security:
+        - bearerAuth: []
+  
+  /users:
+    post:
+      tags: 
+        - Usuarios
+      summary: Crear un nuevo usuario
+      operationId: addUser
+      requestBody: 
+        $ref: '#/components/requestBodies/postUsers'
+      responses:
+        '400':
+          description: Invalid input
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemasError/CreateUser'
+        '201':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Permission Denied
+      security:
+        - bearerAuth: []
+      
+    get:
+      tags: 
+        - Usuarios
+      summary: Obtener todos los sectores por nombre
+      operationId: getUsers
+      requestBody: 
+        $ref: '#/components/requestBodies/configRequest'
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+            description: Nombre del usuario o usuarios que contengan cierta relacion con en texto ingresado
+            example: Juan
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request
+        
+    delete:
+      tags: 
+        - Usuarios
+      summary: Deshabilitar todos los usuarios
+      operationId: delUsers
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: Usuarios Deshabilitados con Exito
+        '401':
+          description: Permission Denied
+      security:
+        - bearerAuth: []
+  
+  /users{id}:
+    get:
+      tags: 
+        - Usuarios
+      summary: Obtener un usuario por ID
+      operationId: getUser
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Identificador unico de cada usuario
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request
+
+    put:
+      tags: 
+        - Usuarios
+      summary: Editar un sector por ID
+      operationId: putUser
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Identificador unico de cada usuario
+      requestBody: 
+        $ref: '#/components/requestBodies/Users'
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: Usuario Actualizado con Exito
+        '400':
+          description: Invalid input
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemasError/DisableSector'
+        '401':
+          description: Permission Denied
+      security:
+        - bearerAuth: []
+    
+    delete:
+      tags: 
+        - Usuarios
+      summary: Deshabilitar un usuario por ID
+      operationId: delUser
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Identificador unico de cada usuario
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: Sector Deshabilitado con Exito
+        '400':
+          description: Invalid input
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemasError/DisableSector'
+        '401':
+          description: Permission Denied
+      security:
+        - bearerAuth: []
+  
+  /type-users:
+    post:
+      tags: 
+        - Tipos de Usuario
+      summary: Crear un nuevo tipo de usuario
+      operationId: addTypeUser
+      requestBody: 
+        $ref: '#/components/requestBodies/postTypeUser'
+      responses:
+        '400':
+          description: Invalid input
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemasError/CreateTypeUser'
+        '201':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/TypeUser'
+        '401':
+          description: Permission Denied
+      security:
+        - bearerAuth: []
+
+    get:
+      tags: 
+        - Tipos de Usuario
+      summary: Obtener todos los tipos de usuario por nombre
+      operationId: getTypeUsers
+      requestBody: 
+        $ref: '#/components/requestBodies/configRequest'
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+            description: Nombre del tipo o tipos de usuarios que contengan cierta relacion con en texto ingresado
+            example: Administrador
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/TypeUser'
+        '400':
+          description: Invalid request
+      
+    delete:
+      tags: 
+        - Tipos de Usuario
+      summary: Deshabilitar todos los tipos de usuario
+      operationId: delTypeUsers
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado el registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: Tipos de usuario Deshabilitados con Exito
+        '401':
+          description: Permission Denied
+      security:
+        - bearerAuth: []
+    
+  /type-users{id}:
+    get:
+      tags: 
+        - Tipos de Usuario
+      summary: Obtener un tipo de usuario por ID
+      operationId: getTypeUser
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Identificador unico de cada tipo de usuario
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/TypeUser'
+        '400':
+          description: Invalid request
+    
+    put:
+      tags: 
+        - Tipos de Usuario
+      summary: Editar un tipo de usuario por ID
+      operationId: putTypeUser
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Identificador unico de cada sector
+      requestBody: 
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: Sector Actualizado con Exito
+        '400':
+          description: Invalid input
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemasError/DisableSector'
+        '401':
+          description: Permission Denied
+      security:
+        - bearerAuth: []
+
+    delete:
+      tags: 
+        - Tipos de Usuario
+      summary: Deshabilitar un tipo de usuario por ID
+      operationId: delSector
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Identificador unico de cada tipo de usuario
+      responses:
+        '204':
+          description: No Result
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: No se han encontrado registros
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  type: string
+                  example: Tipo de Usuario Deshabilitado con Exito
+        '400':
+          description: Invalid input
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemasError/DisableSector'
+        '401':
+          description: Permission Denied
+      security:
+        - bearerAuth: []

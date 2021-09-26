@@ -457,6 +457,48 @@ components:
           type: string
           description: Describe el error obtenido
           example: La Solicitud ya existe
+    CreateRents:
+      type: object
+      properties:
+        success: 
+          type: boolean
+          example: false
+        type:
+          description: Indica el tipo de error
+          type: String
+          example: ValidationError
+        error:
+          type: string
+          description: Describe el error obtenido
+          example: La Renta ya existe
+    CreateUser:
+      type: object
+      properties:
+        success: 
+          type: boolean
+          example: false
+        type:
+          description: Indica el tipo de error
+          type: String
+          example: ValidationError
+        error:
+          type: string
+          description: Describe el error obtenido
+          example: El usuario ya existe
+    CreateTypeUser:
+      type: object
+      properties:
+        success: 
+          type: boolean
+          example: false
+        type:
+          description: Indica el tipo de error
+          type: String
+          example: ValidationError
+        error:
+          type: string
+          description: Describe el error obtenido
+          example: El tipo de usuario ya existe
 
   requestBodies:
     postSector:
@@ -608,6 +650,65 @@ components:
                 type: Object,
                 description: Contiene el detalle de estatus de la Solicitud
                 example: { "status": "En Espera", "ref": 1 }
+    postRents:
+      description: Un objeto JSON que contiene la información de una Renta
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              payment:
+                type: boolean
+                description: Indica el estatus del pago de la renta
+                example: true
+              start_date:
+                type: Object,
+                description: Fecha de inicio del contrato de renta
+                example: 2021-09-13T19:04:04.310Z
+    postUsers:
+      description: Un objeto JSON que contiene la información de un Usuario
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              firstname:
+                type: string
+                description: Nombre del Usuario
+                example: Juan
+              lastname:
+                type: string
+                description: Apellidos del Usuario
+                example: Valdez Suarez
+              email:
+                type: string
+                description: Email del Usuario
+                example: juan@juan.com
+              username:
+                type: string
+                description: Username del Usuario
+    postTypeUser:
+      description: Un objeto JSON que contiene la información de un tipo de Usuario
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Nombre del Tipo de usuario
+                example: Administrador
+              type:
+                type: Number
+                description: Numero identificador de cada tipo de usuario
+                example: 1
+              status:
+                type: boolean,
+                description: Indica si el Tipo de Usuario esta activo o desactivado
+                example: true
 
   securitySchemes:
     bearerAuth:  
