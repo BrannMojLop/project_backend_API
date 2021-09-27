@@ -6,9 +6,7 @@ Proyecto final para curso Bedu Santander Desarrollo Web Full-Stack - BackEnd
 
 - Brandon Mojica Lopez
 - Rogelio Yael Vega Hernández
-- Miriam Alicia Márquez Rivera
 - Christian Eduardo Suárez Ontiveros
-- Antonio Aguirre Flores
 
 # Proyecto: API para Sistema de Rentas
 
