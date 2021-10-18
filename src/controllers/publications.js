@@ -30,8 +30,8 @@ async function showPublications(req, res) {
                 res.status(404).send("No se han encontrado registros");
             }
         })
-    } else if (req.query.location) {
-        const search = new RegExp(`${req.query.location}`, 'i');
+    } else if (req.query.sector) {
+        const search = new RegExp(`${req.query.sector}`, 'i');
         await Publication.aggregate([
             {
                 '$lookup': {
@@ -42,7 +42,31 @@ async function showPublications(req, res) {
                 }
             }, {
                 '$match': {
-                    'location': search
+                    'sector': search
+                }
+            }
+        ], function (err, publications) {
+            if (err) {
+                res.status(401).send(err);
+            } else if (publications.length > 0) {
+                res.status(200).send(publications);
+            } else {
+                res.status(404).send("No se han encontrado registros");
+            }
+        })
+    } else if (req.query.sector) {
+        const search = new RegExp(`${req.query.sector}`, 'i');
+        await Publication.aggregate([
+            {
+                '$lookup': {
+                    'from': 'products',
+                    'localField': 'id_product',
+                    'foreignField': '_id',
+                    'as': 'product'
+                }
+            }, {
+                '$match': {
+                    'sector': search
                 }
             }
         ], function (err, publications) {
