@@ -55,7 +55,7 @@ async function showPublications(req, res) {
             }
         })
     } else if (req.query.category) {
-        const search = new RegExp(`${req.query.category}`, 'i');
+        const search = req.query.category;
         await Publication.aggregate([
             {
                 '$lookup': {
