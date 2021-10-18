@@ -30,8 +30,8 @@ async function showPublications(req, res) {
                 res.status(404).send("No se han encontrado registros");
             }
         })
-    } else if (req.query.sector) {
-        const search = new RegExp(`${req.query.sector}`, 'i');
+    } else if (req.query.category) {
+        const search = new RegExp(`${req.query.category}`, 'i');
         await Publication.aggregate([
             {
                 '$lookup': {
@@ -42,7 +42,7 @@ async function showPublications(req, res) {
                 }
             }, {
                 '$match': {
-                    'sector': search
+                    'category': search
                 }
             }
         ], function (err, publications) {
@@ -54,8 +54,8 @@ async function showPublications(req, res) {
                 res.status(404).send("No se han encontrado registros");
             }
         })
-    } else if (req.query.sector) {
-        const search = new RegExp(`${req.query.sector}`, 'i');
+    } else if (req.query.category) {
+        const search = new RegExp(`${req.query.category}`, 'i');
         await Publication.aggregate([
             {
                 '$lookup': {
@@ -66,7 +66,7 @@ async function showPublications(req, res) {
                 }
             }, {
                 '$match': {
-                    'sector': search
+                    'id_category': search
                 }
             }
         ], function (err, publications) {
