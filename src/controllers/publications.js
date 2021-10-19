@@ -2,6 +2,7 @@ const connect = require('../config/database');
 const Publication = require('../models/Publication');
 const User = require('../models/User');
 const Product = require('../models/Product');
+const Category = require('../models/Category');
 
 async function showPublications(req, res) {
     await connect();
@@ -21,6 +22,7 @@ async function showPublications(req, res) {
                     'title': search
                 }
             }
+
         ], function (err, publications) {
             if (err) {
                 res.status(401).send(err);
@@ -30,8 +32,69 @@ async function showPublications(req, res) {
                 res.status(404).send("No se han encontrado registros");
             }
         })
+    } else if (req.query.sector) {
+
+        const publications = await Publication.aggregate([
+            {
+                '$lookup': {
+                    'from': 'products',
+                    'localField': 'id_product',
+                    'foreignField': '_id',
+                    'as': 'product'
+                }
+            }], function (err, publications) {
+                if (err) {
+                    res.status(401).send(err);
+                } else {
+                    return publications
+                }
+            }
+        );
+
+        const categories = await Category.aggregate([
+            {
+                '$lookup': {
+                    'from': 'sectors',
+                    'localField': 'id_sector',
+                    'foreignField': '_id',
+                    'as': 'sector'
+                }
+            }], function (err, categories) {
+                if (err) {
+                    res.status(401).send(err);
+                } else {
+                    return categories
+                }
+            });
+
+        function searchPublications(publications, categories) {
+            const listCategories = []
+            const results = [];
+            categories.forEach(category => {
+                if (category.sector[0]._id == req.query.sector) {
+                    listCategories.push(String(category._id))
+                }
+            })
+
+            for (let index = 0; index < listCategories.length; index++) {
+                publications.filter(publication => {
+                    if (publication.product[0].id_category == listCategories[index]) {
+                        results.push(publication)
+                    }
+                })
+            }
+
+            if (publications.length <= 0) {
+                res.status(404).send("No se han encontrado registros");
+            } else {
+                res.status(200).send(publications);
+            }
+        }
+
+        searchPublications(publications, categories)
+
     } else if (req.query.category) {
-        const search = new RegExp(`${req.query.category}`, 'i');
+
         await Publication.aggregate([
             {
                 '$lookup': {
@@ -40,44 +103,21 @@ async function showPublications(req, res) {
                     'foreignField': '_id',
                     'as': 'product'
                 }
-            }, {
-                '$match': {
-                    'category': search
+            }], function (err, publications) {
+                const search = publications.filter(publication => {
+                    if (publication.product[0].id_category == req.query.category) {
+                        return publication;
+                    }
+                })
+                if (err) {
+                    res.status(401).send(err);
+                } else if (search.length > 0) {
+                    res.status(200).send(search);
+                } else {
+                    res.status(404).send("No se han encontrado registros");
                 }
             }
-        ], function (err, publications) {
-            if (err) {
-                res.status(401).send(err);
-            } else if (publications.length > 0) {
-                res.status(200).send(publications);
-            } else {
-                res.status(404).send("No se han encontrado registros");
-            }
-        })
-    } else if (req.query.category) {
-        const search = req.query.category;
-        await Publication.aggregate([
-            {
-                '$lookup': {
-                    'from': 'products',
-                    'localField': 'id_product',
-                    'foreignField': '_id',
-                    'as': 'product'
-                }
-            }, {
-                '$match': {
-                    'id_category': search
-                }
-            }
-        ], function (err, publications) {
-            if (err) {
-                res.status(401).send(err);
-            } else if (publications.length > 0) {
-                res.status(200).send(publications);
-            } else {
-                res.status(404).send("No se han encontrado registros");
-            }
-        })
+        );
     } else if (req.query.min_price || req.query.max_price) {
         if (!req.query.min_price) {
             req.query.min_price = 0
