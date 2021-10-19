@@ -87,7 +87,7 @@ async function showPublications(req, res) {
             if (publications.length <= 0) {
                 res.status(404).send("No se han encontrado registros");
             } else {
-                res.status(200).send(publications);
+                res.status(200).send(results);
             }
         }
 
