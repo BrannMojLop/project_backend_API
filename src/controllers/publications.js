@@ -218,6 +218,22 @@ async function getPublication(req, res) {
             }
         },
         {
+            '$lookup': {
+                'from': 'categories',
+                'localField': 'product.id_category',
+                'foreignField': '_id',
+                'as': 'category'
+            }
+        },
+        {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'product.id_lessor',
+                'foreignField': '_id',
+                'as': 'lessor'
+            }
+        },
+        {
             '$match': {
                 "_id": mongoose.Types.ObjectId(req.params.id)
             }
