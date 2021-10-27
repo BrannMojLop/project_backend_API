@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const connect = require('../config/database');
 const Publication = require('../models/Publication');
 const User = require('../models/User');
@@ -206,16 +207,32 @@ async function createPublication(req, res) {
 
 async function getPublication(req, res) {
     await connect();
-    try {
-        const publication = await Publication.findById(req.params.id);
-        if (!publication) {
-            res.status(204).send("No se han encontrado registros");
-        } else {
-            res.status(200).send(publication);
+    let array = ['614cdfe151de9100162a0c08']
+    await Publication.aggregate([
+        {
+            '$lookup': {
+                'from': 'products',
+                'localField': 'id_product',
+                'foreignField': '_id',
+                'as': 'product'
+            }
+        },
+        {
+            '$match': {
+                "_id": mongoose.Types.ObjectId(req.params.id)
+            }
         }
-    } catch (err) {
-        res.status(400).send(err)
-    }
+
+    ], function (err, publications) {
+        if (err) {
+            res.status(401).send(err);
+        } else if (publications.length > 0) {
+            res.status(200).send(publications);
+        } else {
+            console.log(publications);
+            res.status(404).send("No se han encontrado registros");
+        }
+    })
 }
 
 async function updatePublication(req, res) {
