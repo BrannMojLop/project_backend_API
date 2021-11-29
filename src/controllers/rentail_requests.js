@@ -204,9 +204,7 @@ async function updateRentalRequest(req, res) {
         const product = await Product.findById(publication.id_product);
         if (!rentalRequest) {
             res.status(204).send("No se han encontrado el registro");
-        } else if (product.id_lessor != user.id) {
-            res.status(401).send("Permisos insuficientes");
-        } else {
+        } else if (product.id_lessor == user.id || rentalRequest.id_lessee == user.id) {
             if (req.params.answer == 2) {
                 await RentalRequest.findByIdAndUpdate(req.params.id, {
                     answer: {

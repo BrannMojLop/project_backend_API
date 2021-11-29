@@ -225,7 +225,6 @@ async function createPublication(req, res) {
 
 async function getPublication(req, res) {
     await connect();
-    let array = ['614cdfe151de9100162a0c08']
     await Publication.aggregate([
         {
             '$lookup': {
