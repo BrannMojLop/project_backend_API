@@ -20,7 +20,8 @@ async function showPublications(req, res) {
                 }
             }, {
                 '$match': {
-                    'title': search
+                    'title': search,
+                    'status': true
                 }
             }
 
@@ -42,6 +43,10 @@ async function showPublications(req, res) {
                     'localField': 'id_product',
                     'foreignField': '_id',
                     'as': 'product'
+                },
+            }, {
+                '$match': {
+                    'status': true
                 }
             }], function (err, publications) {
                 if (err) {
@@ -59,6 +64,10 @@ async function showPublications(req, res) {
                     'localField': 'id_sector',
                     'foreignField': '_id',
                     'as': 'sector'
+                }
+            }, {
+                '$match': {
+                    'status': true
                 }
             }], function (err, categories) {
                 if (err) {
@@ -104,6 +113,10 @@ async function showPublications(req, res) {
                     'foreignField': '_id',
                     'as': 'product'
                 }
+            }, {
+                '$match': {
+                    'status': true
+                }
             }], function (err, publications) {
                 const search = publications.filter(publication => {
                     if (publication.product[0].id_category == req.query.category) {
@@ -131,7 +144,8 @@ async function showPublications(req, res) {
                 '$match': {
                     'prices': {
                         '$gte': Number(req.query.min_price),
-                        '$lte': Number(req.query.max_price)
+                        '$lte': Number(req.query.max_price),
+                        'status': true
                     }
                 }
             }, {
@@ -163,6 +177,10 @@ async function showPublications(req, res) {
                     'localField': 'id_product',
                     'foreignField': '_id',
                     'as': 'product'
+                }
+            }, {
+                '$match': {
+                    'status': true
                 }
             }], function (err, publications) {
                 if (err) {
