@@ -124,7 +124,7 @@ async function createRentalRequest(req, res) {
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
 
-    if (type === 3) {
+    if (type === 2 || type === 4 || type === 3) {
         const publication = await Publication.findById(rentalRequest.id_publication);
         if (!publication) {
             res.status(401).send("No se ha encontrado el registro de la publicacion");
@@ -184,7 +184,7 @@ async function updateRentalRequest(req, res) {
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
 
-    if (type === 2) {
+    if (type === 2 || type === 4 || type === 3) {
         const rentalRequest = await RentalRequest.findById(req.params.id, function (err) {
             if (err) {
                 res.status(400).json({
