@@ -93,7 +93,7 @@ async function createRent(req, res) {
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
 
-    if (type === 2) {
+    if (type === 2 || type === 4 || type === 3) {
         const rentalRequest = await RentalRequest.findById(rent.id_rentalRequest, function (err) {
             if (err) {
                 res.status(400).json({
@@ -175,7 +175,7 @@ async function updateRent(req, res) {
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
 
-    if (type === 2) {
+    if (type === 2 || type === 4 || type === 3) {
         const rent = await Rent.findById(req.params.id, function (err) {
             if (err) {
                 res.status(400).json({

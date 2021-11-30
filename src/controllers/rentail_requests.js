@@ -7,42 +7,111 @@ const Product = require('../models/Product');
 async function showRentalRequests(req, res) {
     await connect();
     if (req.query.id_lessee) {
-        await RentalRequest.find({ id_lessee: req.query.id_lessee }, function (err, requests) {
-            if (err) {
-                res.status(401).send(err);
-            } else if (requests.length > 0) {
-                res.status(200).send(requests);
-            } else {
-                res.status(404).send("No se han encontrado registros");
+        await RentalRequest.aggregate([
+            {
+                '$lookup': {
+                    'from': 'publications',
+                    'localField': 'id_publication',
+                    'foreignField': '_id',
+                    'as': 'publication'
+                }
+            }], function (err, rentalRequests) {
+
+                const search = rentalRequests.filter(request => {
+                    if (request.id_lessee == req.query.id_lessee) {
+                        return request;
+                    }
+                })
+
+                if (err) {
+                    res.status(401).send(err);
+                } else if (search.length > 0) {
+                    res.status(200).send(search);
+                } else {
+                    res.status(404).send("No se han encontrado registros");
+                }
             }
-        })
+        );
+
     } else if (req.query.id_lessor) {
-        await RentalRequest.find({ id_lessor: req.query.id_lessor }, function (err, requests) {
-            if (err) {
-                res.status(401).send(err);
-            } else if (requests.length > 0) {
-                res.status(200).send(requests);
-            } else {
-                res.status(404).send("No se han encontrado registros");
+        await RentalRequest.aggregate([
+            {
+                '$lookup': {
+                    'from': 'publications',
+                    'localField': 'id_publication',
+                    'foreignField': '_id',
+                    'as': 'publication'
+                }
+            }], function (err, rentalRequests) {
+
+                const search = rentalRequests.filter(request => {
+                    if (request.id_lessor == req.query.id_lessor) {
+                        return request;
+                    }
+                })
+
+                if (err) {
+                    res.status(401).send(err);
+                } else if (search.length > 0) {
+                    res.status(200).send(search);
+                } else {
+                    res.status(404).send("No se han encontrado registros");
+                }
             }
-        })
+        );
     } else if (req.query.id_publication) {
-        await RentalRequest.find({ id_publication: req.query.id_publication }, function (err, requests) {
-            if (err) {
-                res.status(401).send(err);
-            } else if (requests.length > 0) {
-                res.status(200).send(requests);
-            } else {
-                res.status(404).send("No se han encontrado registros");
+        await RentalRequest.aggregate([
+            {
+                '$lookup': {
+                    'from': 'publications',
+                    'localField': 'id_publication',
+                    'foreignField': '_id',
+                    'as': 'publication'
+                }
+            }], function (err, rentalRequests) {
+
+                const search = rentalRequests.filter(request => {
+                    if (request.id_publication == req.query.id_publication) {
+                        return request;
+                    }
+                })
+
+                if (err) {
+                    res.status(401).send(err);
+                } else if (search.length > 0) {
+                    res.status(200).send(search);
+                } else {
+                    res.status(404).send("No se han encontrado registros");
+                }
             }
-        })
+        );
     } else {
-        const rentalRequests = await RentalRequest.find();
-        if (rentalRequests.length === 0) {
-            res.send("No se han encontrado registros");
-        } else {
-            res.status(200).send(rentalRequests);
-        }
+
+        await RentalRequest.aggregate([
+            {
+                '$lookup': {
+                    'from': 'publications',
+                    'localField': 'id_publication',
+                    'foreignField': '_id',
+                    'as': 'publication'
+                }
+            }], function (err, rentalRequests) {
+                if (err) {
+                    res.status(401).send(err);
+                } else if (rentalRequests.length > 0) {
+                    res.status(200).send(rentalRequests);
+                } else {
+                    res.status(404).send("No se han encontrado registros");
+                }
+            }
+        );
+
+        // const rentalRequests = await RentalRequest.find();
+        // if (rentalRequests.length === 0) {
+        //     res.send("No se han encontrado registros");
+        // } else {
+        //     res.status(200).send(rentalRequests);
+        // }
     }
 }
 
@@ -55,7 +124,7 @@ async function createRentalRequest(req, res) {
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
 
-    if (type === 3) {
+    if (type === 2 || type === 4 || type === 3) {
         const publication = await Publication.findById(rentalRequest.id_publication);
         if (!publication) {
             res.status(401).send("No se ha encontrado el registro de la publicacion");
@@ -115,7 +184,7 @@ async function updateRentalRequest(req, res) {
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
 
-    if (type === 2) {
+    if (type === 2 || type === 4 || type === 3) {
         const rentalRequest = await RentalRequest.findById(req.params.id, function (err) {
             if (err) {
                 res.status(400).json({
@@ -135,9 +204,7 @@ async function updateRentalRequest(req, res) {
         const product = await Product.findById(publication.id_product);
         if (!rentalRequest) {
             res.status(204).send("No se han encontrado el registro");
-        } else if (product.id_lessor != user.id) {
-            res.status(401).send("Permisos insuficientes");
-        } else {
+        } else if (product.id_lessor == user.id || rentalRequest.id_lessee == user.id) {
             if (req.params.answer == 2) {
                 await RentalRequest.findByIdAndUpdate(req.params.id, {
                     answer: {

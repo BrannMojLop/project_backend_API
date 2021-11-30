@@ -103,7 +103,7 @@ async function createProduct(req, res) {
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
 
-    if (type === 2) {
+    if (type === 2 || type === 4 || type === 3) {
         await product.save(function (err) {
             if (err) {
                 res.status(400).json({
@@ -142,7 +142,7 @@ async function updateProduct(req, res) {
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
 
-    if (type === 2) {
+    if (type === 2 || type === 4) {
         const product = await Product.findById(req.params.id, function (err) {
             if (err) {
                 res.status(400).json({
@@ -174,7 +174,7 @@ async function disableProduct(req, res) {
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
 
-    if (type === 2) {
+    if (type === 2 || type === 4 || type === 3) {
         const product = await Product.findById(req.params.id, function (err) {
             if (err) {
                 res.status(400).json({

@@ -1,7 +1,9 @@
+const mongoose = require('mongoose');
 const connect = require('../config/database');
 const Publication = require('../models/Publication');
 const User = require('../models/User');
 const Product = require('../models/Product');
+const Category = require('../models/Category');
 
 async function showPublications(req, res) {
     await connect();
@@ -18,9 +20,11 @@ async function showPublications(req, res) {
                 }
             }, {
                 '$match': {
-                    'title': search
+                    'title': search,
+                    'status': true
                 }
             }
+
         ], function (err, publications) {
             if (err) {
                 res.status(401).send(err);
@@ -30,8 +34,77 @@ async function showPublications(req, res) {
                 res.status(404).send("No se han encontrado registros");
             }
         })
-    } else if (req.query.location) {
-        const search = new RegExp(`${req.query.location}`, 'i');
+    } else if (req.query.sector) {
+
+        const publications = await Publication.aggregate([
+            {
+                '$lookup': {
+                    'from': 'products',
+                    'localField': 'id_product',
+                    'foreignField': '_id',
+                    'as': 'product'
+                },
+            }, {
+                '$match': {
+                    'status': true
+                }
+            }], function (err, publications) {
+                if (err) {
+                    res.status(401).send(err);
+                } else {
+                    return publications
+                }
+            }
+        );
+
+        const categories = await Category.aggregate([
+            {
+                '$lookup': {
+                    'from': 'sectors',
+                    'localField': 'id_sector',
+                    'foreignField': '_id',
+                    'as': 'sector'
+                }
+            }, {
+                '$match': {
+                    'status': true
+                }
+            }], function (err, categories) {
+                if (err) {
+                    res.status(401).send(err);
+                } else {
+                    return categories
+                }
+            });
+
+        function searchPublications(publications, categories) {
+            const listCategories = []
+            const results = [];
+            categories.forEach(category => {
+                if (category.sector[0]._id == req.query.sector) {
+                    listCategories.push(String(category._id))
+                }
+            })
+
+            for (let index = 0; index < listCategories.length; index++) {
+                publications.filter(publication => {
+                    if (publication.product[0].id_category == listCategories[index]) {
+                        results.push(publication)
+                    }
+                })
+            }
+
+            if (publications.length <= 0) {
+                res.status(404).send("No se han encontrado registros");
+            } else {
+                res.status(200).send(results);
+            }
+        }
+
+        searchPublications(publications, categories)
+
+    } else if (req.query.category) {
+
         await Publication.aggregate([
             {
                 '$lookup': {
@@ -42,18 +115,23 @@ async function showPublications(req, res) {
                 }
             }, {
                 '$match': {
-                    'location': search
+                    'status': true
+                }
+            }], function (err, publications) {
+                const search = publications.filter(publication => {
+                    if (publication.product[0].id_category == req.query.category) {
+                        return publication;
+                    }
+                })
+                if (err) {
+                    res.status(401).send(err);
+                } else if (search.length > 0) {
+                    res.status(200).send(search);
+                } else {
+                    res.status(404).send("No se han encontrado registros");
                 }
             }
-        ], function (err, publications) {
-            if (err) {
-                res.status(401).send(err);
-            } else if (publications.length > 0) {
-                res.status(200).send(publications);
-            } else {
-                res.status(404).send("No se han encontrado registros");
-            }
-        })
+        );
     } else if (req.query.min_price || req.query.max_price) {
         if (!req.query.min_price) {
             req.query.min_price = 0
@@ -66,7 +144,8 @@ async function showPublications(req, res) {
                 '$match': {
                     'prices': {
                         '$gte': Number(req.query.min_price),
-                        '$lte': Number(req.query.max_price)
+                        '$lte': Number(req.query.max_price),
+                        'status': true
                     }
                 }
             }, {
@@ -99,6 +178,10 @@ async function showPublications(req, res) {
                     'foreignField': '_id',
                     'as': 'product'
                 }
+            }, {
+                '$match': {
+                    'status': true
+                }
             }], function (err, publications) {
                 if (err) {
                     res.send(err);
@@ -119,7 +202,7 @@ async function createPublication(req, res) {
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
 
-    if (type === 2) {
+    if (type === 2 || type === 4 || type === 3) {
         await publication.save(function (err) {
             if (err) {
                 res.status(400).json({
@@ -142,16 +225,47 @@ async function createPublication(req, res) {
 
 async function getPublication(req, res) {
     await connect();
-    try {
-        const publication = await Publication.findById(req.params.id);
-        if (!publication) {
-            res.status(204).send("No se han encontrado registros");
-        } else {
-            res.status(200).send(publication);
+    await Publication.aggregate([
+        {
+            '$lookup': {
+                'from': 'products',
+                'localField': 'id_product',
+                'foreignField': '_id',
+                'as': 'product'
+            }
+        },
+        {
+            '$lookup': {
+                'from': 'categories',
+                'localField': 'product.id_category',
+                'foreignField': '_id',
+                'as': 'category'
+            }
+        },
+        {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'product.id_lessor',
+                'foreignField': '_id',
+                'as': 'lessor'
+            }
+        },
+        {
+            '$match': {
+                "_id": mongoose.Types.ObjectId(req.params.id)
+            }
         }
-    } catch (err) {
-        res.status(400).send(err)
-    }
+
+    ], function (err, publications) {
+        if (err) {
+            res.status(401).send(err);
+        } else if (publications.length > 0) {
+            res.status(200).send(publications);
+        } else {
+            console.log(publications);
+            res.status(404).send("No se han encontrado registros");
+        }
+    })
 }
 
 async function updatePublication(req, res) {
@@ -160,7 +274,7 @@ async function updatePublication(req, res) {
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
 
-    if (type === 2) {
+    if (type === 2 || type === 4 || type === 3) {
         const publication = await Publication.findById(req.params.id, function (err) {
             if (err) {
                 res.status(400).json({
@@ -193,7 +307,7 @@ async function disablePublication(req, res) {
     const user = await User.findById(req.usuario.id);
     const type = await user.typeUser(user.id_type);
 
-    if (type === 2) {
+    if (type === 2 || type === 4 || type === 3) {
         const publication = await Publication.findById(req.params.id, function (err) {
             if (err) {
                 res.status(400).json({
