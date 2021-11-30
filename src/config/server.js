@@ -1,5 +1,6 @@
 import express from "express";
 const swaggerUi = require("swagger-ui-express");
+require('dotenv').config();
 
 const server = express();
 
